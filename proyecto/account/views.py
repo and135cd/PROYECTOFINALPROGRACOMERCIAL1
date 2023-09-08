@@ -35,13 +35,14 @@ def registroAdmin(request):
         form.fields['password2'] = forms.CharField(widget=forms.PasswordInput, required=True)
         form.fields['user_type'] = forms.ChoiceField(choices=[('admin', 'Administrador')], required=True)
 
+        #validar campos
         if form.is_valid():
             # Procesa el formulario aquí
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password1']
             user_type = form.cleaned_data['user_type']
-            # Crea el usuario en la base de datos y establece si es cuidador o usuario
+            # Crea el usuario en la base de datos y establece que es administrador
             user = User.objects.create_user(username=username, email=email, password=password)
             if user_type == 'admin':
                 user.is_admin=True
@@ -73,7 +74,7 @@ def registro(request):
         form.fields['email'] = forms.EmailField(max_length=254, required=True)
         form.fields['password1'] = forms.CharField(widget=forms.PasswordInput, required=True)
         form.fields['password2'] = forms.CharField(widget=forms.PasswordInput, required=True)
-        form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Usuario'), ('employee', 'Cuidador')], required=True)
+        form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
 
         if form.is_valid():
             # Procesa el formulario aquí
@@ -98,7 +99,7 @@ def registro(request):
         form.fields['email'] = forms.EmailField(max_length=254, required=True)
         form.fields['password1'] = forms.CharField(widget=forms.PasswordInput, required=True)
         form.fields['password2'] = forms.CharField(widget=forms.PasswordInput, required=True)
-        form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Usuario'), ('employee', 'Cuidador')], required=True)
+        form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
     return render(request, 'registro.html', {'form': form})
 
 
@@ -120,19 +121,20 @@ def login_view(request):
                 login(request, user)
                 token = generate_jwt_token(user)
 
-
                 # Envía el token al cliente en la respuesta HTTP
-                response = render(request, 'admin.html')  # Puedes ajustar la respuesta según tus necesidades
-                response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
-                return response
-            
-
+                
                 if user.is_admin:
-                    return render(request, 'admin.html')
+                    response = render(request, 'admin.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    return response
                 elif user.is_customer:
-                    return render(request, 'customer.html')
+                    response = render(request, 'customer.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    return response
                 elif user.is_employee:
-                    return render(request, 'employee.html')
+                    response = render(request, 'employee.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    return response
             
         # Si el formulario no es válido o el usuario no existe, muestra el formulario de inicio de sesión con un mensaje de error
         return render(request, 'login.html', {'error': 'nombre de usuario o contraseña inválidos'})
