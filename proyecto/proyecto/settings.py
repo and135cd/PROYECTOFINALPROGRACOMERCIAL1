@@ -77,10 +77,9 @@ WSGI_APPLICATION = 'proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'huellitas',
         'USER':'root',
         'PASSWORD':'', #cambiar segun sus contras
-        'DATABASE':'huellitas',
         'HOST':'localhost',
         'PORT':3306,
     }

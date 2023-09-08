@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from ..proyecto import settings
+from django.conf import settings  # Importa las configuraciones de Django
 import jwt
 # Create your models here.
 
@@ -11,8 +11,6 @@ class User(AbstractUser):
     is_employee=models.BooleanField('is_employee', default=False)
 
 def get_token(self):
-       
-
         payload = {
             'username': self.username,
             'password': self.password,

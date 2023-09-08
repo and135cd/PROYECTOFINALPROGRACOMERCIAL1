@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
+def index(request):
+    return render(request,'index.html')
+
 def registro(request):
     model = User
     template_name = 'registro.html'
@@ -31,7 +34,7 @@ def login(request):
             login(request, user)
             # Redirect to different views based on the user's role
             if user.is_admin:
-                return redirect('admin', {'token': user.get_token()})
+                return redirect('admin', {'token':user.get_token() })
             elif user.is_customer:
                 return redirect('home', {'token': user.get_token()})
             else:
