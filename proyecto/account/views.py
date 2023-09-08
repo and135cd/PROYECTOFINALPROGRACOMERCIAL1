@@ -59,9 +59,9 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 if user.is_admin:
-                    return redirect('admin', {'token': user.get_token()})
+                    return render(request,'admin.html')
                 elif user.is_customer:
-                    return redirect('home', {'token': user.get_token()})
+                    return render(request,'customer.html')
                 elif user.is_employee:
                     return render(request,'employee.html')
                 else:
@@ -69,9 +69,9 @@ def login_view(request):
     else:
         return render(request, 'login.html')
 
-def logout(request):
+def logout_view(request):
     logout(request)
-    return redirect('login')
+    return render(request,'login.html')
 
 def employee(request):
     return render(request, "employee.html")
