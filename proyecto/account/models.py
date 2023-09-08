@@ -10,12 +10,12 @@ class User(AbstractUser):
     is_customer=models.BooleanField('is_customer', default=False)
     is_employee=models.BooleanField('is_employee', default=False)
 
-def get_token(self):
-        payload = {
-            'username': self.username,
-            'password': self.password,
-        }
+    def get_token(self):
+            payload = {
+                'username': self.username,
+                'password': self.password,
+            }
 
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+            token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
-        return token
+            return token
