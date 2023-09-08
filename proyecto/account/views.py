@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from account.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.http import HttpResponse  
 
 # Create your views here.
 def index(request):
@@ -25,7 +26,7 @@ def registro(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password1']
             user_type = form.cleaned_data['user_type']
-            # Crea el usuario en la base de datos y establece is_customer a True
+            # Crea el usuario en la base de datos y establece si es cuidador o usuario
             user = User.objects.create_user(username=username, email=email, password=password)
             if user_type == 'customer':
                 user.is_customer = True
@@ -59,15 +60,17 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 if user.is_admin:
-                    return render(request,'admin.html')
+                    return render(request, 'admin.html')
                 elif user.is_customer:
-                    return render(request,'customer.html')
+                    return render(request, 'customer.html')
                 elif user.is_employee:
-                    return render(request,'employee.html')
-                else:
-                    return render(request, 'login.html', {'error': 'nombre de usuario o correo inválidos'})
-    else:
-        return render(request, 'login.html')
+                    return render(request, 'employee.html')
+            
+        # Si el formulario no es válido o el usuario no existe, muestra el formulario de inicio de sesión con un mensaje de error
+        return render(request, 'login.html', {'error': 'nombre de usuario o contraseña inválidos'})
+    
+    # Si el método no es POST, muestra el formulario de inicio de sesión
+    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
