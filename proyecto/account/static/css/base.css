@@ -1,0 +1,39 @@
+body{
+    background-color: rgba(0, 255, 255, 0.304);
+}
+
+/*Textos*/
+    .titulo{
+        font-size: 30px;
+        color: rgb(255, 149, 0);
+    }
+
+    .texto3{
+        text-align: left;
+        font-size: 80%;
+    }
+
+
+
+/*Alineacion de texto*/
+.center{
+    text-align: center;
+    padding: 2%;
+}
+.textalingleft{
+    text-align: left;
+}
+.margenes{
+  margin: 1%;
+}
+
+/*ALINEACION DE IMAGENES*/
+
+/*FONDOS*/
+.aqua{
+    background-color: aqua;
+}
+
+.celeste{
+    background-color: rgb(135, 248, 248);
+}
