@@ -150,4 +150,7 @@ def logout_view(request):
     return render(request,'login.html')
 
 def employee(request):
-    return render(request, "employee.html")
+    context={
+        'user':request.user,
+    }
+    return render(request, "employee.html",context)
