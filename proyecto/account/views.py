@@ -120,19 +120,21 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 token = generate_jwt_token(user)
-
+                context={
+                    'user':request.user,
+                }
                 # Envía el token al cliente en la respuesta HTTP
                 
                 if user.is_admin:
-                    response = render(request, 'admin.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response = render(request, 'admin.html',context)  # Puedes ajustar la respuesta según tus necesidades
                     response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
                     return response
                 elif user.is_customer:
-                    response = render(request, 'customer.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response = render(request, 'customer.html',context)  # Puedes ajustar la respuesta según tus necesidades
                     response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
                     return response
                 elif user.is_employee:
-                    response = render(request, 'employee.html')  # Puedes ajustar la respuesta según tus necesidades
+                    response = render(request, 'employee.html',context)  # Puedes ajustar la respuesta según tus necesidades
                     response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
                     return response
             
