@@ -1,0 +1,117 @@
+body{
+    background-color: rgba(196, 233, 234, 0.304);
+}
+
+/*Textos*/
+    .titulo{
+        font-size: 30px;
+        color: rgb(0, 234, 255);
+    }
+
+    .texto3{
+        text-align: left;
+        font-size: 80%;
+    }
+/*  */
+.contenedor {
+    display: flex;
+    justify-content: space-between; /* Distribuye el espacio entre las columnas */
+    align-items: flex-start; /* Alinea todo el contenido en la parte superior */
+  }
+  
+  .columna {
+    flex-basis: calc(33.33% - 10px); /* Establece el ancho de cada columna con un pequeño espacio entre ellas */
+    /* Opcionalmente, puedes agregar estilos adicionales */
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .columna.imagen img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .columna.texto {
+    text-align: left;
+  }
+  
+  .textos-juntos {
+    text-align: center; /* Centra los textos horizontalmente */
+  }
+  
+/*  */
+/*Imagen redonda*/
+    .imagen-redonda {
+        width: 110px; /* Ancho de la imagen */
+        height: 90px; /* Altura de la imagen */
+        border-radius: 50%; /* Establece un radio de borde del 50%, lo que hace que la imagen sea redonda */
+        overflow: hidden; /* Asegura que la imagen esté completamente contenida dentro del área redonda */
+    }
+
+/*DIV redonda*/
+    .div-redondeado {
+        width: 50%; /* Ancho del div */
+        height: 50%; /* Altura del div */
+        background-color: #7ab1d6; /* Color de fondo del div (cambiar según tus preferencias) */
+        color: #fff; /* Color del texto dentro del div (cambiar según tus preferencias) */
+        line-height: 200px; /* Centrar verticalmente el contenido */
+    }
+    .div-redondeado2 {
+        width: 85%; /* Ancho del div */
+        height: 85%; /* Altura del div */
+        background-color: #7ab1d6; /* Color de fondo del div (cambiar según tus preferencias) */
+        color: #fff; /* Color del texto dentro del div (cambiar según tus preferencias) */
+        line-height: 200px; /* Centrar verticalmente el contenido */
+    }
+
+/* Centarar imagen */
+    .centrar {
+        margin-left: 25%;
+      }
+    .centrar2 {
+        margin-left: 10%;
+      }
+/*Alineacion de texto*/
+.center{
+    text-align: center;
+    padding: 2%;
+}
+.textalingleft{
+    text-align: left;
+}
+.margenes{
+  margin: 1%;
+}
+
+/*ALINEACION DE IMAGENES*/
+
+/*FONDOS*/
+.aqua{
+    background-color: rgba(45, 188, 254, 0.704);
+    border-radius: 50px; /* Radio de borde para redondear los bordes */
+    padding: 3%;
+}
+
+.aqua2{
+    background-color: rgba(45, 188, 254, 0.704);
+    border-radius: 50px; /* Radio de borde para redondear los bordes */
+}
+.celeste{
+    width: 80%; /* Ancho del div */
+    height: 100%; /* Altura del div */
+    background-color: rgba(255, 255, 255, 0.489);
+    border-radius: 75px; /* Radio de borde para redondear los bordes */
+    margin-left: 10%;
+    padding: 4%;
+    text-align: center; /* Alineación del contenido en el centro */
+}
+.celeste2{
+    width: 80%; /* Ancho del div */
+    height: 100%; /* Altura del div */
+    background-color: rgba(255, 255, 255, 0.489);
+    border-radius: 75px; /* Radio de borde para redondear los bordes */
+    margin-left: 10%;
+    padding: 4%;
+    
+}
