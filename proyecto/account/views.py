@@ -1,21 +1,25 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from account.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.http import HttpResponse  
 import jwt  
-
+from django.contrib.auth.decorators import login_required
+from .forms import PropietarioForm, MascotaForm
+from .models import Propietario, Mascota
+from datetime import datetime, timedelta
 
 JWT_SECRET = 'piwis123Wquipo'
 
 # Función para generar tokens JWT
 def generate_jwt_token(user):
+    expiration_time = datetime.now() + timedelta(minutes=30)
     payload = {
         'user_id': user.id,
         'username': user.username,
-        'user_type': 'admin' if user.is_admin else 'customer' if user.is_customer else 'employee'
-        
+        'user_type': 'admin' if user.is_admin else 'customer' if user.is_customer else 'employee',
+        'exp': expiration_time.timestamp()  
     }
     return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 
@@ -126,16 +130,16 @@ def login_view(request):
                 # Envía el token al cliente en la respuesta HTTP
                 
                 if user.is_admin:
-                    response = render(request, 'admin.html',context)  # Puedes ajustar la respuesta según tus necesidades
-                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    response = render(request, 'admin.html',context) 
+                    response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_customer:
-                    response = render(request, 'customer.html',context)  # Puedes ajustar la respuesta según tus necesidades
-                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    response = render(request, 'customer.html',context) 
+                    response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_employee:
-                    response = render(request, 'employee.html',context)  # Puedes ajustar la respuesta según tus necesidades
-                    response.set_cookie('token', token, httponly=True, secure=True)  # Almacena el token en una cookie (mejora la seguridad)
+                    response = render(request, 'employee.html',context) 
+                    response.set_cookie('token', token, httponly=True, secure=True) 
                     return response
             
         # Si el formulario no es válido o el usuario no existe, muestra el formulario de inicio de sesión con un mensaje de error
@@ -145,14 +149,166 @@ def login_view(request):
     return render(request, 'login.html')
 
 def logout_view(request):
-    logout(request)
+    # Crea la respuesta primero
+    response = redirect('login')
     # Elimina el token almacenado en la cookie al cerrar la sesión
-    response = render(request, 'login.html')
     response.delete_cookie('token')
-    return render(request,'login.html')
+    # Luego, realiza el cierre de sesión
+    logout(request)
+    return response
+
 
 def employee(request):
     context={
         'user':request.user,
     }
     return render(request, "employee.html",context)
+
+@login_required
+def registrar_datos_propietario(request):
+    # Obtén el token actual del usuario autenticado
+    current_token = request.COOKIES.get('token')
+    
+    try:
+        # Intenta obtener los datos de propietario del usuario actual
+        propietario = Propietario.objects.get(user=request.user)
+        
+        # Si ya existen datos de propietario, carga esos datos en el formulario para su edición
+        if request.method == 'POST':
+            form = PropietarioForm(request.POST, instance=propietario)
+        else:
+            form = PropietarioForm(instance=propietario)
+    except Propietario.DoesNotExist:
+        # Si no existen datos de propietario, crea un nuevo formulario para la creación
+        if request.method == 'POST':
+            form = PropietarioForm(request.POST)
+        else:
+            form = PropietarioForm()
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            propietario = form.save(commit=False)
+            propietario.user = request.user
+            propietario.save()
+            return render(request, 'customer.html')
+
+    # Renderiza la página de registro y establece el token en la cookie
+    response = render(request, 'registro_datos_propietario.html', {'form': form})
+    response.set_cookie('token', current_token, httponly=True, secure=True)
+    
+    return response
+
+
+@login_required
+def listar_datos_propietario(request):
+    try:
+        # Intenta obtener los datos de propietario del usuario actual
+        propietario = Propietario.objects.get(user=request.user)
+
+        context = {
+            'propietario': propietario,
+        }
+        return render(request, 'listar_datos_propietario.html', context)
+    except Propietario.DoesNotExist:
+        # Maneja el caso en el que no existen datos de propietario
+        return render(request, 'registro_datos_propietario.html')
+    
+
+@login_required
+def editar_datos_propietario(request):
+    try:
+        propietario = Propietario.objects.get(user=request.user)
+
+        if request.method == 'POST':
+            form = PropietarioForm(request.POST, instance=propietario)
+            if form.is_valid():
+                form.save()
+                return redirect('listar_datos_propietario')
+        else:
+            form = PropietarioForm(instance=propietario)
+
+        context = {
+            'form': form,
+        }
+        return render(request, 'editar_datos_propietario.html', context)
+    except Propietario.DoesNotExist:
+        return render(request, 'sin_datos_propietario.html')
+    
+
+def customer(request):
+    # Obtén el token actual del usuario autenticado
+    current_token = request.COOKIES.get('token')
+    # Verifica si el usuario autenticado ya tiene un propietario asociado
+    try:
+        propietario = Propietario.objects.get(user_id=request.user.id)
+        propietario_nombre = f"{propietario.nombre} {propietario.apellido}"
+    except Propietario.DoesNotExist:
+        propietario_nombre = None
+
+    context = {
+        'user': request.user,
+        'propietario_nombre': propietario_nombre,
+    }
+    # Renderiza la página de customer y establece el token en la cookie
+    response = render(request, 'customer.html', context)
+    response.set_cookie('token', current_token, httponly=True, secure=True)
+    
+    return response
+
+#Mascotas
+@login_required
+def listar_mascotas(request):
+    if request.user.is_customer:  # Verifica si el usuario autenticado es un propietario
+        propietario = request.user.propietario
+
+        # Filtra las mascotas asociadas al propietario actual
+        mascotas = Mascota.objects.filter(propietario=propietario)
+
+        return render(request, 'mascotas/listar_mascotas.html', {'mascotas': mascotas})
+    else:
+        # Maneja el caso en el que el usuario no sea un propietario
+        return HttpResponse('No tienes permiso para acceder a esta página.')
+
+@login_required
+def agregar_mascota(request):
+    if request.method == 'POST':
+        form = MascotaForm(request.POST)
+        if form.is_valid():
+            propietario = Propietario.objects.get(user=request.user)
+            mascota = form.save(commit=False)
+            mascota.propietario = propietario
+            mascota.save()
+            return redirect('listar_mascotas')
+    else:
+        form = MascotaForm()
+    return render(request, 'mascotas/agregar_mascota.html', {'form': form})
+
+@login_required
+def editar_mascota(request, pk):
+    mascota = get_object_or_404(Mascota, pk=pk)
+    
+    # Verifica si la mascota pertenece al propietario autenticado
+    if mascota.propietario != request.user.propietario:
+        return HttpResponse('No tienes permiso para editar esta mascota.')
+
+    if request.method == 'POST':
+        form = MascotaForm(request.POST, instance=mascota)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_mascotas')
+    else:
+        form = MascotaForm(instance=mascota)
+    return render(request, 'mascotas/editar_mascota.html', {'form': form})
+
+@login_required
+def eliminar_mascota(request, pk):
+    mascota = get_object_or_404(Mascota, pk=pk)
+    
+    # Verifica si la mascota pertenece al propietario autenticado
+    if mascota.propietario != request.user.propietario:
+        return HttpResponse('No tienes permiso para eliminar esta mascota.')
+
+    if request.method == 'POST':
+        mascota.delete()
+        return redirect('listar_mascotas')
+    return render(request, 'mascotas/eliminar_mascota.html', {'mascota': mascota})

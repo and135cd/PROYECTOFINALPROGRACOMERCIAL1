@@ -1,0 +1,12 @@
+<!-- registro_datos_propietario.html -->
+<h1>Registrar Datos de Propietario</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Datos de Propietario</button>
+    
+    <!-- Cambia type="submit" a type="button" en el botón "Regresar" y agrega el token a la URL -->
+    
+</form>
+<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a>
+

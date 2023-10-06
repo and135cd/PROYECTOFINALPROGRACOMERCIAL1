@@ -1,0 +1,9 @@
+<h1>Datos del Propietario</h1>
+<p>Nombre: {{ propietario.nombre }}</p>
+<p>Apellido: {{ propietario.apellido }}</p>
+
+<p>Direccion: {{ propietario.direccion }}</p>
+
+<p>Telefono: {{ propietario.telefono }}</p>
+<a href="{% url 'editar_datos_propietario' %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a>

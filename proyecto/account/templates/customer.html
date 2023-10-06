@@ -4,7 +4,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!![endif]-->
 <html>
     <head>
         <meta charset="utf-8">
@@ -28,16 +28,29 @@
                         <nav class="navbar bg-body-tertiary">
                           <div class="container-fluid p-">
                             <a class="navbar-brand">Huellitas</a>
-                            <form class="d-flex" role="search">
+                            
+
+                            <div>
+                              {% if user.is_authenticated %}
+                                <div class='p-2'>
+                                    {% if user.is_customer and user.propietario %}
+                                        <a href="{% url 'listar_datos_propietario' %}" class="btn btn-primary">Perfil de {{ user.propietario.nombre }}</a>
+                                    {% else %}
+                                        <a href="{% url 'registro_datos_propietario' %}" class="btn btn-primary">Registrar datos de Propietario</a>
+                                    {% endif %}
+                                </div>
+                              {% endif %}
+                            </div>
+                              <a href="{% url 'listar_mascotas' %}" class="btn btn-secondary">Mascotas</a>
                               
-                              <div class='p-2'>
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-                                </form>
+                            
+                            <form class="d-flex" role="search">         
+                              <div class='p-1'>
+                                      {% csrf_token %}
+                                      <a href="{% url 'logout' %}" class="btn btn-danger">Cerrar sesion</a>
                               </div>
-                              
                             </form>
+                            
                           </div>
                         </nav>
                       </div>
@@ -46,7 +59,7 @@
         
  <!--Cuerpo de la pagina-->
  <div class='m-2'>
-  <h4 class="center">Cuidamos tu mascota</h4>
+  <h4 class="center">Bienvenido</h4>
 </div>
 
 </div>
