@@ -1,4 +1,72 @@
-<h1>Datos del Propietario</h1>
+{%load static%}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Datos del propietario</title>
+    <!-- Agrega las referencias a Bootstrap CSS y JS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Agrega tu archivo de estilos CSS personalizado -->
+    <link rel="stylesheet" type="text/css" href="estilos.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/editar_datos_propietario.css' %}">
+</head>
+<body>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan="2">Datos del propietario</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nombre:</td>
+                    <td>{{ propietario.nombre }}</td>
+                </tr>
+                <tr>
+                    <td>Apellido:</td>
+                    <td>{{ propietario.apellido }}</td>
+                </tr>
+                <tr>
+                    <td>Dirección:</td>
+                    <td>{{ propietario.direccion }}</td>
+                </tr>
+                <tr>
+                    <td>Teléfono:</td>
+                    <td>{{ propietario.telefono }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="button-cell">
+                        <a href="{% url 'editar_datos_propietario' %}" class="btn-gradient2">Editar</a>
+                        <a href="{% url 'customer' %}" class="btn-gradient">Regresar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Agrega la referencia a Bootstrap JavaScript al final del documento -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <h1>Datos del propietario</h1>
 <p>Nombre: {{ propietario.nombre }}</p>
 <p>Apellido: {{ propietario.apellido }}</p>
 
@@ -6,4 +74,4 @@
 
 <p>Telefono: {{ propietario.telefono }}</p>
 <a href="{% url 'editar_datos_propietario' %}" class="btn btn-warning">Editar</a>
-<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a>
+<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a> -->
