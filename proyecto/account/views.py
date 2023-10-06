@@ -29,6 +29,10 @@ def generate_jwt_token(user):
 def index(request):
     return render(request,'index.html')
 
+@login_required
+def tipos_cuidados(request):
+    return render(request,'cuidados/tipos_cuidados.html')
+
 def registroAdmin(request):
     if request.method == 'POST':
         # Define el formulario personalizado directamente en la vista

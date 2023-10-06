@@ -21,11 +21,54 @@
 
 
 
+    <div class="content " >
+      <div class="">
+        <div class="row justify-content-center" >
+          <div class="col-md-12 contents">
+            <div class="row justify-content-center">
+              <div class="col-md-12">
+                <div class="form-block">
+                  <nav class="navbar bg-body-tertiary">
+                    <div class="container-fluid  login">
+                      <img src="{% static 'images/Huellitas.png' %}" alt="Mi imagen" width="10%" height="10%">
+                      <a class="navbar-brand titulo" c>Huellitas</a>                         
+                      <div>
+                        {% if user.is_authenticated %}
+                          <div class='p-2'>
+                              {% if user.is_customer and user.propietario %}
+                                  <a href="{% url 'listar_datos_propietario' %}" class="btn btn-primary">Perfil de {{ user.propietario.nombre }}</a>
+                              {% else %}
+                                  <a href="{% url 'registro_datos_propietario' %}" class="btn btn-primary">Registrar datos de Propietario</a>
+                              {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                        <a href="{% url 'listar_mascotas' %}" class="btn btn-secondary">Mascotas</a>
+                        
+                      
+                      <form class="d-flex" role="search">         
+                        <div class='p-1'>
+                                {% csrf_token %}
+                                <a href="{% url 'logout' %}" class="btn btn-danger">Cerrar sesion</a>
+                        </div>
+                      </form>
+                      
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
   </head >
   <body>
+
+
     <div class="content" >
       <div class="">
         <div class="row justify-content-center" >
