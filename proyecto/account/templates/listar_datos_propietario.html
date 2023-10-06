@@ -7,8 +7,7 @@
     <!-- Agrega las referencias a Bootstrap CSS y JS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Agrega tu archivo de estilos CSS personalizado -->
-    <link rel="stylesheet" type="text/css" href="estilos.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/listar_datos_propietario.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tablas.css' %}">
 </head>
 <body>
     <div class="container">
@@ -37,11 +36,16 @@
                 </tr>
                 <tr>
                     <td colspan="2" class="button-cell">
-                        <a href="{% url 'editar_datos_propietario' %}" class="btn-gradient2">Editar</a>
-                        <a href="{% url 'customer' %}" class="btn-gradient">Regresar</a>
+                        <div class="text-center">
+                            <a href="{% url 'editar_datos_propietario' %}" class="btn-gradient2 ">Editar</a>
+                            <a href="{% url 'customer' %}" class="btn-gradient">Regresar</a>                            
+                        </div>
                     </td>
+                    
                 </tr>
+                
             </tbody>
+            
         </table>
     </div>
     <!-- Agrega la referencia a Bootstrap JavaScript al final del documento -->

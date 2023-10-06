@@ -1,12 +1,54 @@
 <!-- registro_datos_propietario.html -->
-<h1>Registrar Datos de Propietario</h1>
+
+{%load static%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tablas.css' %}">
+
+
+    <title>Registrar Datos de Propietario</title>
+</head>
+<body>
+  
+    <div class="container table-container">
+        <h1 class="mt-4">Registrar Datos de Propietario</h1>
+        <form method="post">
+            {% csrf_token %}
+            <table class="table table-bordered">
+                {{ form.as_table }}
+            </table>
+            <div class="text-center mt-3">
+                <button type="submit" class="btn-gradient mt-5">Guardar Cambios</button>
+                <a href="{% url 'customer' %}" class="btn-gradient2 mt-3">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>
+
+
+
+
+
+
+<!-- <h1>Registrar Datos de Propietario</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Guardar Datos de Propietario</button>
     
-    <!-- Cambia type="submit" a type="button" en el botón "Regresar" y agrega el token a la URL -->
+   Cambia type="submit" a type="button" en el botón "Regresar" y agrega el token a la URL
     
 </form>
 <a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a>
-
+ -->
