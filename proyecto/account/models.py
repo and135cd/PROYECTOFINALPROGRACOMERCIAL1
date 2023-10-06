@@ -42,19 +42,27 @@ class Mascota(models.Model):
     raza = models.CharField(max_length=100)
     edad = models.IntegerField()
     propietario = models.ForeignKey(Propietario, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.nombre 
 
 class TipoDeCuidado(models.Model):
     nombre = models.CharField(max_length=100)
+    def __str__(self):
+        return self.nombre 
 
 class SolicitudDeCuidado(models.Model):
     fecha_solicitud = models.DateField()
+    fecha_inicio = models.DateField()
     hora_inicio = models.TimeField()
+    fecha_fin = models.DateField()
     hora_fin = models.TimeField()
+    ubicacion_servicio = models.CharField(max_length=200, null=True, blank=True)
     descripcion = models.TextField()
     estado = models.CharField(max_length=20)
     tipo_de_cuidado = models.ForeignKey(TipoDeCuidado, on_delete=models.CASCADE)
     cuidadores_aceptan = models.ManyToManyField(Cuidador, related_name='solicitudes_aceptadas')
     propietario = models.ForeignKey(Propietario, on_delete=models.CASCADE)
+    mascotas = models.ManyToManyField(Mascota, related_name='solicitudes_de_alojamiento')
 
 class Conversacion(models.Model):
     solicitud_de_cuidado = models.ForeignKey(SolicitudDeCuidado, on_delete=models.CASCADE)
@@ -63,3 +71,6 @@ class Conversacion(models.Model):
     mensaje = models.TextField()
     fecha_y_hora = models.DateTimeField(auto_now_add=True)
 
+class MascotaSolicitud(models.Model):
+    mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
+    solicitud_de_cuidado = models.ForeignKey(SolicitudDeCuidado, on_delete=models.CASCADE)

@@ -6,9 +6,10 @@ from django import forms
 from django.http import HttpResponse  
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm
-from .models import Propietario, Mascota
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
 from datetime import datetime, timedelta
+from datetime import date  
 
 JWT_SECRET = 'piwis123Wquipo'
 
@@ -316,3 +317,34 @@ def eliminar_mascota(request, pk):
         mascota.delete()
         return redirect('listar_mascotas')
     return render(request, 'mascotas/eliminar_mascota.html', {'mascota': mascota})
+
+
+#cuidados
+@login_required
+def publicar_alojamiento(request):
+    if request.method == 'POST':
+        form = AlojamientoForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.propietario = request.user.propietario
+            solicitud.estado = 'Pendiente'
+            solicitud.tipo_de_cuidado = TipoDeCuidado.objects.get(nombre='Alojamiento')  # Asigna el tipo de cuidado
+            solicitud.save()
+            form.save_m2m()  # Guarda la relación ManyToMany con las mascotas
+
+            return redirect('listar_solicitudes_de_cuidado')
+
+    else:
+        form = AlojamientoForm()
+
+        # Filtra las mascotas del propietario autenticado
+        propietario = request.user.propietario
+        form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
+
+    return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+
+@login_required
+def listar_solicitudes_de_cuidado(request):
+    propietario = request.user.propietario
+    solicitudes = SolicitudDeCuidado.objects.filter(propietario=propietario)
+    return render(request, 'cuidados/listar_solicitudes.html', {'solicitudes': solicitudes})

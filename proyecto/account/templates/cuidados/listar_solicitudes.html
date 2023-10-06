@@ -1,0 +1,11 @@
+<h1>Listado de Solicitudes de Cuidado</h1>
+  <ul>
+    {% for solicitud in solicitudes %}
+      <li>
+        Fecha de Solicitud: {{ solicitud.fecha_solicitud }}<br>
+        Tipo de Cuidado: {{ solicitud.tipo_de_cuidado.nombre }}<br>
+        Descripción: {{ solicitud.descripcion }}<br>
+        <!-- Aquí puedes mostrar más información de la solicitud según tus necesidades -->
+      </li>
+    {% endfor %}
+  </ul>
