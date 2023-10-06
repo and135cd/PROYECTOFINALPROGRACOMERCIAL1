@@ -6,30 +6,37 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!![endif]-->
 <html>
-    <head>
+  <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Huellitas</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
         <link rel="stylesheet" href="">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/estilos.css' %}">
 
-    </head>
-    <body>
-        <div class="content">
-            <div class="container">
-              <div class="row justify-content-center">
-                <div class="col-md-10 contents">
+  </head>
+  <body>
+          <div class="content " >
+            <div class="">
+              <div class="row justify-content-center" >
+                <div class="col-md-12 contents">
                   <div class="row justify-content-center">
                     <div class="col-md-12">
                       <div class="form-block">
                         <nav class="navbar bg-body-tertiary">
-                          <div class="container-fluid p-">
-                            <a class="navbar-brand">Huellitas</a>
-                            
-
+                          <div class="container-fluid  login">
+                            <img src="{% static 'images/Huellitas.png' %}" alt="Mi imagen" width="10%" height="10%">
+                            <a class="navbar-brand titulo" c>Huellitas</a>                         
                             <div>
                               {% if user.is_authenticated %}
                                 <div class='p-2'>
@@ -56,115 +63,169 @@
                       </div>
                     </div>
                   </div>
-        
- <!--Cuerpo de la pagina-->
- <div class='m-2'>
-  <h4 class="center">Bienvenido</h4>
-</div>
-
-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+    
 
 
-<div class="center aqua margenes" >
-<h3>¿Desea algun tipo de cuidado?</h3>
-<div class="celeste">
-  <p>Publicar anuncio</p>
-</div>
-</div>
-
-<div class=" aqua margenes">
-<h3 class="center">Recomendados</h3>
-
-<div class="container text-center celeste">
-  <!-- primera parte Perfil-->
-
-
-  <!--segunda parte Carrusel-->
-  <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <!--Cuidamos de tu mascota-->
+    <div class='m-2'>
+      <h4 class="center">Cuidamos tu mascota</h4>
     </div>
-    <div class="carousel-inner">
-      <div class="row align-items-start">
-        <div class="col-md-2">
-          <img  class="" src="https://static.fundacion-affinity.org/cdn/farfuture/qN7Hm3-VRJkAk8t4tACvkuovjty5LAqfNdUCeT25Fr4/mtime:1528830328/sites/default/files/antrozoologia-el-vinculo-entre-humanos-y-animales.jpg" alt="Mi imagen" width="100%" height="100%">
-        </div>
-        <div class="col-md-9">
-          <h3 class="textalingleft">Gabriela ovalle</h3>
-          <p class="texto3">Me encantan los perros, tengo 2 en casa y son muy buenos</p>
-        </div>
-        <div class="col-md-1">
-          <img  class="" src="https://images.vexels.com/media/users/3/182737/isolated/preview/1745ce07bb8df6a05ab32e1c82c90429-icono-de-corazon-plano.png" alt="Corazon" width="125%" height="125%">
-        </div>
-      </div>
-      <div class="carousel-item active">
-        <!-- Primer perfil  -->
 
-        <img src="https://s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/09/11124552/GettyImages-544673512.jpg" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Luis Miguel Juarez</h5>
-          <p>Los animales son terapeuticos</p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <!-- Segundo Perfil -->
 
-        <img src="https://fielpet.com.ar/blog/content/images/2021/06/22.jpg" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Rony Carpio</h5>
-          <p>Cuidar animales es mi pasion</p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <!-- Tercer Perfil  -->
-
-        <img src="https://img.mestizos.cl/upload/2018/07/17161E5C4C43436D17150F55574941781F161C1853434178-1024x576.webp" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Gabriela Ovalle</h5>
-          <p>Me encantan los perros, tengo 2 en casa y son muy buenos</p>
-        </div>
+    <!-- ¿Desea algun tipo de cuidado? -->
+    <div class=" aqua  div-redondeado centrar" >
+      <h2 style="text-align: left; color: black;" class="mb-4">¿Desea algun tipo de cuidado?</h2>
+      <div class="celeste div-redondeado">
+        <h1 class=""><button type="button" class="btn btn-light btn-lg"><h1>Publicar anuncio</h1></button></h1>
       </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
 
-  <!-- Tercera parte Botones -->
-  <div class="row align-items-end">
-    <div class="col">
-      <div class="mt-3" role="group" aria-label="Basic outlined example">
-        <button type="button" class="btn btn-outline-primary">Seguir</button>
-        <button type="button" class="btn btn-outline-primary">Ver más...</button>                
+    <!-- RECOMENDADOS -->
+    <div class=" aqua2 div-redondeado2 mt-4 centrar2">
+      <h3 class="center" style="color: black;">Recomendados</h3>
+      <div class="container text-center celeste2">
+        <!-- primera parte Perfil-->
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <!-- Primer perfil  -->
+              <div>
+                <!-- Usuario -->
+                <div class="row mb-3 ">
+                  <img class="imagen-redonda" src="https://www.exitopersonal.com/imagenes/8-cosas-que-las-personas-felices-nunca-hacen_x2.jpg" alt="Mi imagen" width="50%" height="50%">
+                  <!-- Imagen redonda -->
+
+
+                  <div class="col-sm-6">
+                    <h3 class="textalingleft ">Mario de la Cruz</h3>
+                    <h6  class="textalingleft ">Cuidador desde 2022</h6>
+                  </div>  
+                  <img class="imagen-redondaMeGusta alineadaDerecha" src="https://cdn-icons-png.flaticon.com/512/7579/7579707.png" alt="Mi imagen" width="20%" height="10%">  
+           
+                </div>
+                <!-- descripcion  -->
+                <div class="">
+                    <img src="https://s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/09/11124552/GettyImages-544673512.jpg" class="imagen-redondaDescripcion" alt="..." >
+                </div>
+              </div>
+            </div>
+           
+             <!-- Segundo Perfil -->
+            <div class="carousel-item">  
+              <div>
+                <!-- Usuario -->
+                <div class="row mb-3 ">
+                  <!-- Imagen redonda de perfik -->
+                  <img class="imagen-redonda" src="https://images.ecestaticos.com/tH9eFLVK0XZQZm6XwlsUzdPc0Pc=/40x0:1372x999/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2F880%2F90e%2Ff88%2F88090ef8823801c0f19287c01dce1b8b.jpg" alt="Mi imagen" width="50%" height="50%">      
+                  <!-- Descripcion -->
+                  <div class="col-sm-6">
+                    <h3 class="textalingleft ">Rony Carpio</h3>
+                    <h6  class="textalingleft ">Cuidar animales es mi pasion</h6>
+                  </div>  
+                  <!-- Imagen de me gusta -->
+                  <img class="imagen-redondaMeGusta alineadaDerecha" src="https://i.pinimg.com/originals/06/cb/60/06cb6030d0477c0aed785fe479b2dbb7.png" alt="Mi imagen" width="20%" height="10%">  
+           
+                </div>
+                <!-- Imagen de prevista  -->
+                <div class="">
+                    <img src="https://fielpet.com.ar/blog/content/images/2021/06/22.jpg" class="imagen-redondaDescripcion" alt="..." >
+                </div>
+              </div>
+            </div>
+            <!-- Tercer Perfil  -->
+            <div class="carousel-item">
+              <div>
+                <!-- Usuario -->
+                <div class="row mb-3 ">
+                  <!-- Imagen redonda de perfik -->
+                  <img class="imagen-redonda" src="https://images.unsplash.com/photo-1542578951838-47d40e8b4f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHBlcnNvbmFzJTIweSUyMGFuaW1hbGVzfGVufDB8fDB8fHww&w=1000&q=80" alt="Mi imagen" width="50%" height="50%">      
+                  <!-- Descripcion -->
+                  <div class="col-sm-6">
+                    <h3 class="textalingleft ">Gabriela ovalle</h3>
+                    <h6  class="textalingleft ">Me encantan los perros, tengo 2 en casa y son muy buenos</h6>
+                  </div>  
+                  <!-- Imagen de me gusta -->
+                  <img class="imagen-redondaMeGusta alineadaDerecha" src="https://cdn-icons-png.flaticon.com/512/7579/7579707.png" alt="Mi imagen" width="20%" height="10%">  
+           
+                </div>
+                <!-- Imagen de prevista  -->
+                <div class="">
+                    <img  src="https://img.mestizos.cl/upload/2018/07/17161E5C4C43436D17150F55574941781F161C1853434178-1024x576.webp" class="imagen-redondaDescripcion" alt="..." >
+                </div>
+              </div>
+            </div>
+          </div>
+         
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+       
+      </div>
+
+
+      <div class="cc">
+        <button type="button" class="btn btn-light ">Seguir</button>
+        <button type="button" class="btn btn-light ">Ver mas...</button>
+      </div>
+     
+     
+        <!-- Tercera parte Botones -->
+
+
+     
+    </div>
+
+
+    <!-- COSTOS -->
+    <div class="aqua3 mt-4 " >
+      <h1 class="center" style="color: black;">Costos</h1>
+      <div class="outer-container">
+        <div class="inner-container">
+            <div class="slider-container">
+                <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+                <div class="slider-label" style="color: black;">Q25</div>
+                <div class="slider-label" style="color: black;">Q50</div>
+                <div class="slider-label" style="color: black;">Q75</div>
+                <div class="slider-label" style="color: black;">Q100</div>
+                <div class="slider-label" style="color: black;">Q5</div>
+                <button type="button" class="btn btn-light mt-5 ">Siguiente</button>
+            </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
 
 
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+        const slider = document.getElementById("myRange");
 
-</body>
+
+        // Función para actualizar el valor en los elementos de etiqueta
+        slider.addEventListener("input", function () {
+            const value = this.value;
+            const labels = document.querySelectorAll(".slider-label");
+            labels.forEach((label) => {
+                label.style.transform = `translateX(-50%) translateX(${value}%)`;
+            });
+        });
+    </script>
+
+  </body>
 </html>
