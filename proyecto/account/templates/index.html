@@ -29,14 +29,15 @@
                   <nav class="navbar bg-body-tertiary">
                     <div class="container-fluid  login">
                       <img src="{% static 'images/Huellitas.png' %}" alt="Mi imagen" width="10%" height="10%">
-                      <a class="navbar-brand titulo" c>Huellitas</a>
+                      <a class="navbar-brand titulo" c href="{%url 'index'%}">Huellitas</a>
                       <form class="d-flex" role="search">                       
                         <div class='p-2'>
-                          <a class="btn btn-outline-primary " href="login/" role="button">Login</a>
+                          {% if not request.user.is_authenticated %}
+                            <a class="btn btn-outline-primary" href="{% url 'login' %}?next={{ request.path }}">Iniciar sesión</a>
+                          {% endif %}                        
                         </div>                        
                         <div class="p-2">
-                          <a class="btn btn-outline-warning" href="registro/" role="button">Registrarse</a>
-                        </div>                          
+                          <a class="btn btn-outline-warning" href="{% url 'registro' %}?next={{ request.path }}">Registrarse</a>                        </div>                          
                       </form>
                     </div>
                   </nav>
@@ -54,31 +55,12 @@
   <body>
 
 
+    {% block content %}
+
+    {%endblock%}
 
 
-  </div>
-
-  <h1 class="center">Aqui puedes encontrar variedad de cuidados para tus mascotas</h1>
-  <img class="center" style="align-items: center; margin-left: 25%;"  src="{% static 'images/Huellitas.png' %}" alt="Mi imagen" width="50%" height="50%">
-
-
-
-
-<!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-        const slider = document.getElementById("myRange");
-
-
-        // Función para actualizar el valor en los elementos de etiqueta
-        slider.addEventListener("input", function () {
-            const value = this.value;
-            const labels = document.querySelectorAll(".slider-label");
-            labels.forEach((label) => {
-                label.style.transform = `translateX(-50%) translateX(${value}%)`;
-            });
-        });
-    </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
 
 
 

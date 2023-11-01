@@ -1,0 +1,34 @@
+{% extends "customer.html" %}
+
+{%block content%}
+
+<div class="">
+  <h5>¿QUÉ TIPO DE SERVICIO DESEA?</h5>
+<!-- Primera fila con 6 botones -->
+<div class="row row1 p-5">
+    <div class="col">
+      <a class="btn btn-primary" href="{% url 'publicar_alojamiento' %}">Alojamiento</a>
+        
+    </div>
+    <div class="col">
+        <button class="btn btn-primary">Cuidado</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-primary">Paseo</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-primary">Guardería</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-primary">Peluquería</button>
+    </div>
+    <div class="col">
+        <button class="btn btn-primary">Taxi</button>
+    </div>
+</div>
+
+
+</div>
+
+
+{% endblock %}

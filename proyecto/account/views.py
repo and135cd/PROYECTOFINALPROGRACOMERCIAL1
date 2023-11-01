@@ -28,11 +28,16 @@ def generate_jwt_token(user):
 
 # Create your views here.
 def index(request):
-    return render(request,'index.html')
+    return render(request,'index2.html')
+    
 
 @login_required
 def tipos_cuidados(request):
     return render(request,'cuidados/tipos_cuidados.html')
+
+@login_required
+def cuidados2(request):
+    return render(request,'cuidados/tipos_cuidados copy.html')
 
 def registroAdmin(request):
     if request.method == 'POST':
@@ -111,7 +116,8 @@ def registro(request):
         form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
     return render(request, 'registro.html', {'form': form})
 
-
+def inicio(request):
+    return render(request, 'inicio.html')
 
 
 def login_view(request):
@@ -139,7 +145,7 @@ def login_view(request):
                     response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_customer:
-                    response = render(request, 'customer.html',context) 
+                    response = redirect('customer') 
                     response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_employee:
@@ -258,7 +264,7 @@ def customer(request):
     response = render(request, 'customer.html', context)
     response.set_cookie('token', current_token, httponly=True, secure=True)
     
-    return response
+    return redirect('inicio')
 
 #Mascotas
 @login_required

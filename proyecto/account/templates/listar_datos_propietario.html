@@ -1,20 +1,12 @@
+{%extends 'customer.html'%}
 {%load static%}
+{% block content %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Datos del propietario</title>
-    <!-- Agrega las referencias a Bootstrap CSS y JS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Agrega tu archivo de estilos CSS personalizado -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/tablas.css' %}">
-</head>
-<body>
     <div class="container">
         <table class="table">
             <thead>
                 <tr>
-                    <th colspan="2">Datos del propietario</th>
+                    <th colspan="2"><h3>Datos del propietario</h3></th>
                 </tr>
             </thead>
             <tbody>
@@ -37,8 +29,7 @@
                 <tr>
                     <td colspan="2" class="button-cell">
                         <div class="text-center">
-                            <a href="{% url 'editar_datos_propietario' %}" class="btn-gradient2 ">Editar</a>
-                            <a href="{% url 'customer' %}" class="btn-gradient">Regresar</a>                            
+                            <a href="{% url 'editar_datos_propietario' %}" class="btn btn-primary ">Editar</a>
                         </div>
                     </td>
                     
@@ -50,8 +41,10 @@
     </div>
     <!-- Agrega la referencia a Bootstrap JavaScript al final del documento -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+    
+
+{%endblock%}
 
 
 
