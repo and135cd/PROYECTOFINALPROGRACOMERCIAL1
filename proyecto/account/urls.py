@@ -12,12 +12,11 @@ urlpatterns = [
     path('editar_datos_propietario/', views.editar_datos_propietario, name='editar_datos_propietario'),
     path('customer/', views.customer, name='customer'),  # Esta es la URL de la vista 'customer'
     path('inicio/',views.inicio, name='inicio'),
-    path('cuidados2',views.cuidados2,name='cuidados2'),
     path('listar-mascotas/', views.listar_mascotas, name='listar_mascotas'),
     path('agregar-mascota/', views.agregar_mascota, name='agregar_mascota'),
     path('editar-mascota/<int:pk>/', views.editar_mascota, name='editar_mascota'),
     path('eliminar-mascota/<int:pk>/', views.eliminar_mascota,name="eliminar_mascota"),
-    path('cuidados/',views.tipos_cuidados,name='cuidados'),
+    path('cuidados/',views.cuidados,name='cuidados'),
     path('publicar-alojamiento/', views.publicar_alojamiento, name='publicar_alojamiento'),
     path('mis-solicitudes/', views.listar_solicitudes_de_cuidado, name='listar_solicitudes_de_cuidado'),
 ]

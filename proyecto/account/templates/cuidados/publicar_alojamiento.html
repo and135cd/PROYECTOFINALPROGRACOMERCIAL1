@@ -1,6 +1,65 @@
-<h2>Publicar Servicio de Alojamiento</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Publicar</button>
-</form>
+{% extends "customer.html" %}
+{% block content %}
+<div class="container">
+  <h3>Publicar servicio de alojamiento</h3>
+  <form method="post" id="alojamientoForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div id="mapid" style="height: 400px;"></div>
+    <input type="hidden" id="ubicacion" name="ubicacion" />
+    <button type="submit">Publicar</button>
+  </form>
+</div>
+
+<script>
+  var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(mymap);
+  
+  var marker;
+
+  mymap.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+    document.getElementById('ubicacion').value = lat + "," + lng;
+    if (marker) {
+      mymap.removeLayer(marker);
+    }
+    marker = L.marker(e.latlng, {draggable: true}).addTo(mymap);
+    marker.on('dragend', function(event){
+      var position = marker.getLatLng();
+      document.getElementById('ubicacion').value = position.lat + "," + position.lng;
+    });
+  });
+
+  function locateUser() {
+    mymap.locate({setView: true, maxZoom: 16});
+  }
+
+  mymap.on('locationfound', function(e) {
+    if (marker) {
+      mymap.removeLayer(marker);
+    }
+    marker = L.marker(e.latlng, {draggable: true}).addTo(mymap);
+    marker.on('dragend', function(event){
+      var position = marker.getLatLng();
+      document.getElementById('ubicacion').value = position.lat + "," + position.lng;
+    });
+    mymap.setView(e.latlng, 16);
+    document.getElementById('ubicacion').value = e.latlng.lat + "," + e.latlng.lng;
+  });
+
+  mymap.on('locationerror', function(e) {
+    alert("No se pudo acceder a la ubicación. Por favor, haz clic en el mapa para seleccionar una ubicación.");
+  });
+
+  locateUser(); // Intenta localizar al usuario automáticamente al cargar el mapa
+</script>
+
+<style>
+  #mapid { height: 400px; }
+</style>
+
+{% endblock %}

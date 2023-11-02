@@ -67,12 +67,15 @@ class SolicitudDeCuidado(models.Model):
     fecha_fin = models.DateField()
     hora_fin = models.TimeField()
     ubicacion_servicio = models.CharField(max_length=200, null=True, blank=True)
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
     descripcion = models.TextField()
     estado = models.CharField(max_length=20)
     tipo_de_cuidado = models.ForeignKey(TipoDeCuidado, on_delete=models.CASCADE)
     cuidadores_aceptan = models.ManyToManyField(Cuidador, related_name='solicitudes_aceptadas')
     propietario = models.ForeignKey(Propietario, on_delete=models.CASCADE)
     mascotas = models.ManyToManyField(Mascota, related_name='solicitudes_de_alojamiento')
+
 
 class Conversacion(models.Model):
     solicitud_de_cuidado = models.ForeignKey(SolicitudDeCuidado, on_delete=models.CASCADE)

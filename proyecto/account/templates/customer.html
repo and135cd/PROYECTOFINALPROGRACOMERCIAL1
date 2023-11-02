@@ -28,6 +28,10 @@
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+  
+    <!-- Incluir JavaScript de Leaflet -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <div class="content">
       <div class="">
         <div class="row justify-content-center">
@@ -54,6 +58,9 @@
                             {% else %}
                               <a href="{% url 'registro_datos_propietario' %}?from_menu=mascotas" class="btn btn-info">Mascotas</a>
                             {% endif %}
+                          </div>
+                          <div class="p-2">
+                            <a href="{% url 'listar_solicitudes_de_cuidado' %}" class="btn btn-info">Solicitudes</a>
                           </div>
                           <div class='p-2'>
                             <form class="d-flex" role="search">

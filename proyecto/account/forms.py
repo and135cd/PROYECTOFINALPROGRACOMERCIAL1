@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Propietario, Mascota, SolicitudDeCuidado
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
 
 class PropietarioForm(forms.ModelForm):
     class Meta:
@@ -23,6 +23,13 @@ class AlojamientoForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         label='Mascotas',
         required=False,
+    )
+    # Cambia tipo_de_cuidado a ModelChoiceField y obtén el tipo correcto en la vista.
+    tipo_de_cuidado = forms.ModelChoiceField(
+        queryset=TipoDeCuidado.objects.all(),
+        empty_label=None,
+        widget=forms.Select(attrs={'disabled': 'disabled'}),
+        required=False  # Siempre estableceremos esto en la vista, no necesita ser enviado por el formulario
     )
 
     class Meta:

@@ -11,6 +11,8 @@ from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
 from datetime import datetime, timedelta
 from datetime import date 
 from django.contrib import messages 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 JWT_SECRET = 'piwis123Wquipo'
 
@@ -37,7 +39,7 @@ def tipos_cuidados(request):
     return render(request,'cuidados/tipos_cuidados.html')
 
 @login_required
-def cuidados2(request):
+def cuidados(request):
     return render(request,'cuidados/tipos_cuidados copy.html')
 
 def registroAdmin(request):
@@ -347,21 +349,39 @@ def publicar_alojamiento(request):
             solicitud = form.save(commit=False)
             solicitud.propietario = request.user.propietario
             solicitud.estado = 'Pendiente'
-            solicitud.tipo_de_cuidado = TipoDeCuidado.objects.get(nombre='Alojamiento')  # Asigna el tipo de cuidado
+            
+            # Intenta obtener el objeto TipoDeCuidado con el nombre 'Alojamiento'
+            try:
+                tipo_alojamiento = TipoDeCuidado.objects.get(nombre='Alojamiento')
+            except ObjectDoesNotExist:
+                messages.error(request, "No se pudo encontrar el tipo de cuidado 'Alojamiento'.")
+                return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+            
+            solicitud.tipo_de_cuidado = tipo_alojamiento
+            
+            # Obtiene las coordenadas de la ubicación desde el formulario
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                try:
+                    lat, lng = map(float, ubicacion.split(','))
+                    solicitud.latitud = lat
+                    solicitud.longitud = lng
+                except ValueError:
+                    messages.error(request, "La ubicación proporcionada es inválida.")
+                    return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+                
             solicitud.save()
-            form.save_m2m()  # Guarda la relación ManyToMany con las mascotas
-
+            form.save_m2m()  # Guarda las relaciones ManyToMany con las mascotas
+            
+            messages.success(request, "La solicitud de alojamiento ha sido publicada con éxito.")
             return redirect('listar_solicitudes_de_cuidado')
-
     else:
         form = AlojamientoForm()
-
         # Filtra las mascotas del propietario autenticado
         propietario = request.user.propietario
         form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
 
     return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
-
 @login_required
 def listar_solicitudes_de_cuidado(request):
     propietario = request.user.propietario
