@@ -1,0 +1,36 @@
+{% extends "employee.html" %}
+{% block content %}
+
+<div class="container mt-3">
+    <h3 class="mb-4">Solicitudes de cuidado cercanas a ti</h3>
+    
+    {% if solicitudes_cercanas %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for solicitud in solicitudes_cercanas %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            Solicitud de {{ solicitud.tipo_de_cuidado }}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Propietario: {{ solicitud.propietario.nombre }}</h5>
+                            <p class="card-text"><strong>Inicio:</strong> {{ solicitud.fecha_inicio }} a las {{ solicitud.hora_inicio }}</p>
+                            <p class="card-text"><strong>Fin:</strong> {{ solicitud.fecha_fin }} a las {{ solicitud.hora_fin }}</p>
+                            <p class="card-text"><strong>Ubicación:</strong> {{ solicitud.ubicacion_servicio }}</p>
+                            <p class="card-text"><strong>Descripcion:</strong> {{ solicitud.descripcion }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'detalle_solicitud' solicitud_id=solicitud.id %}" class="btn btn-primary">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No hay solicitudes cercanas para mostrar.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

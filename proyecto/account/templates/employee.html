@@ -40,7 +40,7 @@
                 </li>
                 
                 <li class="nav-item">
-                  <a class="btn btn-info m-1" href="#">Anuncios</a>
+                  <a class="btn btn-info m-1" href="{% url 'solicitudes-cercanas' user.cuidador.id %}">Anuncios</a>
                 </li>
               {%else%}
                 <li class="nav-item">

@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from datetime import date 
 from django.contrib import messages 
 from django.core.exceptions import ObjectDoesNotExist
+from geopy.distance import geodesic
 
 
 JWT_SECRET = 'piwis123Wquipo'
@@ -263,7 +264,49 @@ def editar_datos_cuidador(request):
         })
     except Cuidador.DoesNotExist:
         return redirect('registrar_datos_cuidador')
+    
+def solicitudes_cercanas(request, cuidador_id):
+    # Suponiendo que tienes un cuidador ya autenticado o lo identificas por un ID
+    cuidador = Cuidador.objects.get(id=cuidador_id)
+    
+    # Definir un rango de búsqueda, por ejemplo 10 kilómetros.
+    RANGO_BUSQUEDA = 10  # kilómetros
 
+    # Obtener todas las solicitudes de cuidado con estado 'Pendiente'.
+    solicitudes_pendientes = SolicitudDeCuidado.objects.filter(estado='Pendiente')
+
+    # Filtrar las solicitudes que están dentro del rango del cuidador
+    solicitudes_cercanas = []
+    for solicitud in solicitudes_pendientes:
+        if solicitud.latitud and solicitud.longitud and cuidador.latitud and cuidador.longitud:
+            distancia = geodesic(
+                (solicitud.latitud, solicitud.longitud),
+                (cuidador.latitud, cuidador.longitud)
+            ).kilometers
+
+            if distancia <= RANGO_BUSQUEDA:
+                solicitudes_cercanas.append(solicitud)
+
+    # Ahora tienes una lista de solicitudes cercanas que puedes pasar al contexto de tu template o como JSON si estás haciendo una API
+    context = {
+        'solicitudes_cercanas': solicitudes_cercanas,
+    }
+
+    return render(request, 'cuidadores/solicitudes_cercanas.html', context)
+
+#ver solicitud
+def ver_solicitud(request, solicitud_id):
+    # Obtener la solicitud específica y las mascotas relacionadas.
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    mascotas = solicitud.mascotas.all()  # Obtener todas las mascotas relacionadas con la solicitud
+
+    # Pasar la solicitud y las mascotas al contexto de la plantilla.
+    context = {
+        'solicitud': solicitud,
+        'mascotas': mascotas,
+    }
+    
+    return render(request, 'cuidadores/solicitud_detalle.html', context)
 
 @login_required
 def registrar_datos_propietario(request):

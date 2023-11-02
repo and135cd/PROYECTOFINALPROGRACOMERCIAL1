@@ -9,6 +9,8 @@ urlpatterns = [
     path('listar_datos_cuidador/', views.listar_datos_cuidador, name='listar_datos_cuidador'),
     path('registro_datos_cuidador/', views.registrar_datos_cuidador, name='registro_datos_cuidador'),
     path('editar_datos_cuidador/', views.editar_datos_cuidador, name='editar_datos_cuidador'),
+    path('solicitudes-cercanas/<int:cuidador_id>/', views.solicitudes_cercanas, name='solicitudes-cercanas'),
+    path('solicitud/<int:solicitud_id>/', views.ver_solicitud, name='detalle_solicitud'),
 
     path('logout/', views.logout_view, name='logout'),
      path('listar_datos_propietario/', views.listar_datos_propietario, name='listar_datos_propietario'),
