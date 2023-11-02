@@ -1,12 +1,17 @@
 # forms.py
 from django import forms
-from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 
 class PropietarioForm(forms.ModelForm):
     class Meta:
         model = Propietario
-        fields = ['nombre', 'apellido','direccion', 'telefono' ]  # Ajusta los campos según tus necesidades
+        fields = ['nombre', 'apellido','direccion', 'telefono' ]  
 
+class CuidadorForm(forms.ModelForm):
+    class Meta:
+        model = Cuidador
+        fields = ['nombre', 'apellido','direccion', 'telefono' ]  
+        
 class MascotaForm(forms.ModelForm):
     edad = forms.IntegerField(label='Edad en años')
     class Meta:

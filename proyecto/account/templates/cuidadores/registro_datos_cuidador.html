@@ -1,17 +1,18 @@
-{% extends "customer.html" %}
-{% block content %}
-<div class="container">
-  <h3>Publicar servicio de alojamiento</h3>
-  <form method="post" id="alojamientoForm" class="mb-3">
-    {% csrf_token %}
-    {{ form.as_p }}
+{% extends "employee.html" %}
 
-    
-    <label>Ingrese su ubicacion en el mapa</label>
-    <div id="mapid" class="my-3"></div>
-    <input type="hidden" id="ubicacion" name="ubicacion" />
-    <button type="submit" class="btn btn-primary mt-3">Publicar anuncio</button>
-  </form>
+{% block content %}
+<div class="container table-container">
+    <h3 class="mt-4">Registrar datos de cuidador de mascotas</h3>
+    <form method="post" id="cuidadorForm">
+        {% csrf_token %}
+        <table class="table table-bordered">
+            {{ form.as_table }}
+        </table>
+        <label>Ingrese su ubicacion en el mapa</label>
+        <div id="mapid" class="my-3"></div>
+        <input type="hidden" id="ubicacion" name="ubicacion" />
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+    </form>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>

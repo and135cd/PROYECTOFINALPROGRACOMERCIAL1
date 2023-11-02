@@ -6,8 +6,8 @@ from django import forms
 from django.http import HttpResponse  
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm, AlojamientoForm
-from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 from datetime import datetime, timedelta
 from datetime import date 
 from django.contrib import messages 
@@ -40,8 +40,24 @@ def tipos_cuidados(request):
 
 @login_required
 def cuidados(request):
-    return render(request,'cuidados/tipos_cuidados copy.html')
+    if request.user.is_customer:
+        try:
+            propietario = request.user.propietario
+        except Propietario.DoesNotExist:
+            messages.warning(request, 'Debes registrar tus datos de propietario primero.')
+            return redirect('registro_datos_propietario')
 
+        # Verifica si el propietario tiene al menos una mascota registrada
+        mascotas = Mascota.objects.filter(propietario=propietario)
+        if not mascotas:
+            messages.warning(request, 'Debes registrar al menos una mascota para publicar un anuncio.')
+            return redirect('agregar_mascota')  
+
+        # Si tiene un perfil de propietario y al menos una mascota, muestra la página de cuidados
+        return render(request, 'cuidados/tipos_cuidados copy.html')
+    else:
+        messages.error(request, 'No tienes permiso para ver esta página.')
+        return redirect('inicio')
 def registroAdmin(request):
     if request.method == 'POST':
         # Define el formulario personalizado directamente en la vista
@@ -171,12 +187,83 @@ def logout_view(request):
     logout(request)
     return response
 
-
+#empleado
 def employee(request):
     context={
         'user':request.user,
     }
     return render(request, "employee.html",context)
+
+
+@login_required
+def registrar_datos_cuidador(request):
+    current_token = request.COOKIES.get('token')
+    cuidador, created = Cuidador.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = CuidadorForm(request.POST, instance=cuidador)
+        if form.is_valid():
+            # Asignar latitud y longitud antes de guardar el modelo
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                latitud, longitud = ubicacion.split(',')
+                cuidador.latitud = float(latitud)
+                cuidador.longitud = float(longitud)
+            cuidador = form.save(commit=False)  # Guardar el objeto Cuidador después de asignar la latitud y longitud
+            cuidador.save()
+            messages.success(request, "Sus datos han sido guardados correctamente.")
+            return redirect('employee')
+    else:
+        form = CuidadorForm(instance=cuidador)
+
+    response = render(request, 'cuidadores/registro_datos_cuidador.html', {'form': form})
+    response.set_cookie('token', current_token, httponly=True, secure=True)
+    
+    return response
+
+@login_required
+def listar_datos_cuidador(request):
+    try:
+        # Intenta obtener los datos de propietario del usuario actual
+        cuidador = Cuidador.objects.get(user=request.user)
+
+        context = {
+            'cuidador': cuidador,
+        }
+        return render(request, 'cuidadores/listar_datos_cuidador.html', context)
+    except Cuidador.DoesNotExist:
+        # Maneja el caso en el que no existen datos de propietario
+        return render(request, 'cuidadores/registro_datos_cuidador.html')
+    
+
+@login_required
+def editar_datos_cuidador(request):
+    try:
+        cuidador = Cuidador.objects.get(user=request.user)
+
+        if request.method == 'POST':
+            form = CuidadorForm(request.POST, instance=cuidador)
+            if form.is_valid():
+                # Asignar latitud y longitud antes de guardar el modelo
+                ubicacion = request.POST.get('ubicacion', '')
+                if ubicacion:
+                    latitud, longitud = ubicacion.split(',')
+                    cuidador.latitud = float(latitud)
+                    cuidador.longitud = float(longitud)
+                cuidador = form.save(commit=False)
+                cuidador.save()
+                messages.success(request, "Sus datos han sido actualizados correctamente.")
+                return redirect('listar_datos_cuidador')  
+        else:
+            form = CuidadorForm(instance=cuidador)
+
+        return render(request, 'cuidadores/editar_datos_cuidador.html', {
+            'form': form,
+            'cuidador': cuidador  # Pasamos el objeto cuidador para acceder a la latitud y longitud en el template
+        })
+    except Cuidador.DoesNotExist:
+        return redirect('registrar_datos_cuidador')
+
 
 @login_required
 def registrar_datos_propietario(request):
@@ -253,7 +340,7 @@ def editar_datos_propietario(request):
         }
         return render(request, 'editar_datos_propietario.html', context)
     except Propietario.DoesNotExist:
-        return render(request, 'sin_datos_propietario.html')
+        return render(request, 'registrar_datos_propietario.html')
     
 
 def customer(request):
@@ -278,22 +365,16 @@ def customer(request):
 
 @login_required
 def listar_mascotas(request):
-    if request.user.is_customer:  # Verifica si el usuario autenticado es un propietario
-        if hasattr(request.user, 'propietario'):
-            propietario = request.user.propietario
-
-            # Filtra las mascotas asociadas al propietario actual
-            mascotas = Mascota.objects.filter(propietario=propietario)
-
-            return render(request, 'mascotas/listar_mascotas.html', {'mascotas': mascotas})
-        else:
-            # Si el usuario no tiene un propietario, muestra un mensaje y redirige a la página para registrar datos de propietario
-            messages.warning(request, 'Debes ingresar tus datos de propietario primero.')
-            print("si se envia el mensaje")
-            return redirect('registro_datos_propietario')
-    else:
-        # Maneja el caso en el que el usuario no sea un propietario
+    if not request.user.is_customer:
         return HttpResponse('No tienes permiso para acceder a esta página.')
+    
+    propietario = getattr(request.user, 'propietario', None)
+    if not propietario:
+        messages.warning(request, 'Debes ingresar tus datos de propietario primero.')
+        return redirect('registro_datos_propietario')
+    
+    mascotas = Mascota.objects.filter(propietario=propietario)
+    return render(request, 'mascotas/listar_mascotas.html', {'mascotas': mascotas})
     
 @login_required
 def agregar_mascota(request):

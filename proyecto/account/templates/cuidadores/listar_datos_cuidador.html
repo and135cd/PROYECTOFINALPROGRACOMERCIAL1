@@ -1,0 +1,74 @@
+{%extends 'employee.html'%}
+{%load static%}
+{% block content %}
+
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan="2"><h3>Datos del cuidador</h3></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nombre:</td>
+                    <td>{{ cuidador.nombre }}</td>
+                </tr>
+                <tr>
+                    <td>Apellido:</td>
+                    <td>{{ cuidador.apellido }}</td>
+                </tr>
+                <tr>
+                    <td>Dirección:</td>
+                    <td>{{ cuidador.direccion }}</td>
+                </tr>
+                <tr>
+                    <td>Teléfono:</td>
+                    <td>{{ cuidador.telefono }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="button-cell">
+                        <div class="text-center">
+                            <a href="{% url 'editar_datos_cuidador' %}" class="btn btn-primary ">Editar</a>
+                        </div>
+                    </td>
+                    
+                </tr>
+                
+            </tbody>
+            
+        </table>
+    </div>
+    <!-- Agrega la referencia a Bootstrap JavaScript al final del documento -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <h1>Datos del propietario</h1>
+<p>Nombre: {{ propietario.nombre }}</p>
+<p>Apellido: {{ propietario.apellido }}</p>
+
+<p>Direccion: {{ propietario.direccion }}</p>
+
+<p>Telefono: {{ propietario.telefono }}</p>
+<a href="{% url 'editar_datos_propietario' %}" class="btn btn-warning">Editar</a>
+<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a> -->

@@ -26,6 +26,8 @@ class Propietario(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     direccion = models.CharField(max_length=200)
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
     telefono = models.CharField(max_length=15)
 
 class Cuidador(models.Model):
@@ -33,6 +35,8 @@ class Cuidador(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     direccion = models.CharField(max_length=200)
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
     telefono = models.CharField(max_length=15)
 
 class Mascota(models.Model):
@@ -64,7 +68,7 @@ class SolicitudDeCuidado(models.Model):
     fecha_solicitud = models.DateField()
     fecha_inicio = models.DateField()
     hora_inicio = models.TimeField()
-    fecha_fin = models.DateField()
+    fecha_fin = models.DateField(blank=True)
     hora_fin = models.TimeField()
     ubicacion_servicio = models.CharField(max_length=200, null=True, blank=True)
     latitud = models.FloatField(null=True, blank=True)
