@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import PropietarioForm, MascotaForm, AlojamientoForm
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado
 from datetime import datetime, timedelta
-from datetime import date  
+from datetime import date 
+from django.contrib import messages 
 
 JWT_SECRET = 'piwis123Wquipo'
 
@@ -179,7 +180,8 @@ def employee(request):
 def registrar_datos_propietario(request):
     # Obtén el token actual del usuario autenticado
     current_token = request.COOKIES.get('token')
-    
+    from_menu = request.GET.get('from_menu')  # Verifica si el usuario viene de hacer clic en "Mascotas"
+
     try:
         # Intenta obtener los datos de propietario del usuario actual
         propietario = Propietario.objects.get(user=request.user)
@@ -201,13 +203,19 @@ def registrar_datos_propietario(request):
             propietario = form.save(commit=False)
             propietario.user = request.user
             propietario.save()
-            return render(request, 'customer.html')
+            
+            # Verifica si el usuario viene de hacer clic en "Mascotas" y redirige en consecuencia
+            if from_menu:
+                return redirect('listar_mascotas')
+            else:
+                return redirect('customer')
 
     # Renderiza la página de registro y establece el token en la cookie
     response = render(request, 'registro_datos_propietario.html', {'form': form})
     response.set_cookie('token', current_token, httponly=True, secure=True)
     
     return response
+
 
 
 @login_required
@@ -266,20 +274,25 @@ def customer(request):
     
     return redirect('inicio')
 
-#Mascotas
 @login_required
 def listar_mascotas(request):
     if request.user.is_customer:  # Verifica si el usuario autenticado es un propietario
-        propietario = request.user.propietario
+        if hasattr(request.user, 'propietario'):
+            propietario = request.user.propietario
 
-        # Filtra las mascotas asociadas al propietario actual
-        mascotas = Mascota.objects.filter(propietario=propietario)
+            # Filtra las mascotas asociadas al propietario actual
+            mascotas = Mascota.objects.filter(propietario=propietario)
 
-        return render(request, 'mascotas/listar_mascotas.html', {'mascotas': mascotas})
+            return render(request, 'mascotas/listar_mascotas.html', {'mascotas': mascotas})
+        else:
+            # Si el usuario no tiene un propietario, muestra un mensaje y redirige a la página para registrar datos de propietario
+            messages.warning(request, 'Debes ingresar tus datos de propietario primero.')
+            print("si se envia el mensaje")
+            return redirect('registro_datos_propietario')
     else:
         # Maneja el caso en el que el usuario no sea un propietario
         return HttpResponse('No tienes permiso para acceder a esta página.')
-
+    
 @login_required
 def agregar_mascota(request):
     if request.method == 'POST':

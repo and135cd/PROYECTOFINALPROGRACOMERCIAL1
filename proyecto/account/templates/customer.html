@@ -20,12 +20,13 @@
     <title>Huellitas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}"> -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/estilos.css' %}">
+    <link rel="stylesheet"  href="{% static 'css/estilos.css' %}">
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Agrega tu archivo de estilos CSS personalizado -->
-    <link rel="stylesheet" type="text/css" href="estilos.css">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/editar_datos_propietario.css' %}">
+    
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
     <div class="content">
       <div class="">
@@ -42,13 +43,17 @@
                         {% if user.is_authenticated %}
                           <div class='p-2'>
                             {% if user.is_customer and user.propietario %}
-                              <a href="{% url 'listar_datos_propietario' %}" class="btn btn-primary">Perfil de {{ user.propietario.nombre }}</a>
+                              <a href="{% url 'listar_datos_propietario' %}" class="btn btn-info">Perfil de {{ user.propietario.nombre }}</a>
                             {% else %}
-                              <a href="{% url 'registro_datos_propietario' %}" class="btn btn-primary">Registrar datos de propietario</a>
+                              <a href="{% url 'registro_datos_propietario' %}" class="btn btn-info">Registrar datos de propietario</a>
                             {% endif %}
                           </div>
                           <div class='p-2'>
-                            <a href="{% url 'listar_mascotas' %}" class="btn btn-secondary">Mascotas</a>
+                            {% if user.is_customer and user.propietario %}
+                              <a href="{% url 'listar_mascotas' %}" class="btn btn-info">Mascotas</a>
+                            {% else %}
+                              <a href="{% url 'registro_datos_propietario' %}?from_menu=mascotas" class="btn btn-info">Mascotas</a>
+                            {% endif %}
                           </div>
                           <div class='p-2'>
                             <form class="d-flex" role="search">
@@ -71,8 +76,21 @@
    
   </head >
   <body>
+    {% if messages %}
+      <div class="alert alert-dismissible">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-center" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
     
       {% block content %}
+        
 
       {% endblock %}
     

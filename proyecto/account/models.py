@@ -37,7 +37,17 @@ class Cuidador(models.Model):
 
 class Mascota(models.Model):
     nombre = models.CharField(max_length=100)
-    especie = models.CharField(max_length=100)
+    especie = models.CharField(max_length=100, choices=[('Perro', 'Perro'),
+        ('Gato', 'Gato'),
+        ('Pez', 'Pez'),
+        ('Pájaro', 'Pájaro'),
+        ('Conejo', 'Conejo'),
+        ('Hamster', 'Hamster'),
+        ('Cobaya', 'Cobaya'),
+        ('Reptil', 'Reptil'),
+        ('Conejillo de Indias', 'Conejillo de Indias'),
+        ('Hurón', 'Hurón'),
+        ('Otro', 'Otro'),])
     genero = models.CharField(max_length=10, choices=[('Macho', 'Macho'), ('Hembra', 'Hembra')]) 
     raza = models.CharField(max_length=100)
     edad = models.IntegerField()

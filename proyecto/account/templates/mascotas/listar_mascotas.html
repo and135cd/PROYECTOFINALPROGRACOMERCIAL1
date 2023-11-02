@@ -1,11 +1,20 @@
-<h1>Listado de Mascotas</h1>
-<ul>
-  {% for mascota in mascotas %}
-    <li>{{ mascota.nombre }} - {{ mascota.raza }} - {{ mascota.edad }} años
-    <a href="{% url 'editar_mascota' mascota.pk %}" class="btn btn-primary">Editar</a>
-    <a href="{% url 'eliminar_mascota' mascota.pk %}" class="btn btn-danger">Eliminar</a>
-  </li>
-  {% endfor %}
-</ul>
-<a href="{% url 'agregar_mascota' %}">Agregar Mascota</a>
-<a href="{% url 'customer' %}" class="btn btn-secondary">Regresar</a>
+{% extends "customer.html" %}
+
+{% block content %}
+  
+<div class="container">
+  <h3 class="mt-4">Listado de mascotas</h3>
+  <ul class="list-group mt-3">
+    {% for mascota in mascotas %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ mascota.nombre }} - raza: {{ mascota.raza }} - edad: {{ mascota.edad }} años
+        <div class="btn-group" role="group">
+          <a href="{% url 'editar_mascota' mascota.pk %}" class="btn btn-primary">Editar <i class='far fa-edit'></i></a>
+          <a href="{% url 'eliminar_mascota' mascota.pk %}" class="btn btn-danger">Eliminar <i class='fa fa-trash'></i></a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'agregar_mascota' %}" class="btn btn-success mt-3">Agregar mascota</a>
+</div>
+{% endblock %}

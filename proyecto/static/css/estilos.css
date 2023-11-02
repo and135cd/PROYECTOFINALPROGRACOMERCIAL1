@@ -1,0 +1,224 @@
+body{
+    background-color: rgba(196, 233, 234, 0.304);
+}
+
+/* Pagina de COSTUMER */
+    /*Textos*/
+        .login{
+            background-color: rgba(120, 212, 255, 0.382);
+        }
+        .titulo{
+            text-align: center;
+            font-size: 250%;
+            color: rgb(255, 255, 255);
+        }
+
+
+        .texto3{
+            text-align: left;
+            font-size: 80%;
+        }
+    
+        .cc {
+            text-align: center; /* Centra horizontalmente los elementos */
+            line-height: 100px; /* Centra verticalmente los elementos */
+            height: 10%; /* Ajusta la altura del contenedor según tus necesidades */
+        }
+        
+        button {
+            display: inline-block; /* Hace que los botones sean elementos en línea */
+            vertical-align: middle; /* Centra verticalmente los botones dentro del contenedor */
+            margin: 5px; /* Agrega un espacio entre los botones (opcional) */
+        }
+        
+
+    /*Imagen redonda*/
+        .imagen-redonda {
+            width: 25%; /* Ancho de la imagen */
+            height: 90px; /* Altura de la imagen */
+            border-radius: 50%; /* Establece un radio de borde del 50%, lo que hace que la imagen sea redonda */
+            overflow: hidden; /* Asegura que la imagen esté completamente contenida dentro del área redonda */
+        }
+        .imagen-redondaMeGusta {
+            width: 15%; /* Ancho de la imagen */
+            height: 8%; /* Altura de la imagen */
+            border-radius: 10%; /* Establece un radio de borde del 50%, lo que hace que la imagen sea redonda */
+            overflow: hidden; /* Asegura que la imagen esté completamente contenida dentro del área redonda */
+            margin-left: 5%;
+        }
+        .imagen-redondaDescripcion {
+            width: 100%; /* Ancho de la imagen */
+            height: 100%; /* Altura de la imagen */
+            border-radius: 10%; /* Establece un radio de borde del 50%, lo que hace que la imagen sea redonda */
+            overflow: hidden; /* Asegura que la imagen esté completamente contenida dentro del área redonda */
+        }
+
+
+    /*DIV redonda*/
+        .div-redondeado {
+            width: 50%; /* Ancho del div */
+            height: 50%; /* Altura del div */
+            background-color: #7ab1d6; /* Color de fondo del div (cambiar según tus preferencias) */
+            color: #fff; /* Color del texto dentro del div (cambiar según tus preferencias) */
+            line-height: 200px; /* Centrar verticalmente el contenido */
+        }
+        .div-redondeado2 {
+            width: 85%; /* Ancho del div */
+            height: 85%; /* Altura del div */
+            background-color: #7ab1d6; /* Color de fondo del div (cambiar según tus preferencias) */
+            color: #fff; /* Color del texto dentro del div (cambiar según tus preferencias) */
+            line-height: 200px; /* Centrar verticalmente el contenido */
+        }
+
+    /*Alineacion de texto*/
+        .center{
+            text-align: center;
+            padding: 2%;
+        }
+        .textalingleft{
+            text-align: left;
+        }
+        .margenes{
+        margin: 1%;
+        }
+
+    /*FONDOS*/
+        .aqua{
+            margin-left: auto;
+            margin-right: auto;
+            width: 700px; /* Ancho del div */
+            height: 300px; /* Altura del div */    
+            background-color: rgba(45, 188, 254, 0.704);
+            border-radius: 50px; /* Radio de borde para redondear los bordes */
+            padding: 3%;
+        }
+        .celeste{
+            width: 500px; /* Ancho del div */
+            height: 135px; /* Altura del div */
+            background-color: rgba(255, 255, 255, 0.489);
+            border-radius: 75px; /* Radio de borde para redondear los bordes */
+            margin-left: 10%;
+            padding: 4%;
+            text-align: center; /* Alineación del contenido en el centro */
+        }
+
+        .aqua2{
+            margin-left: auto;
+            margin-right: auto;
+            width: 820px; /* Ancho del div */
+            height: 730px; /* Altura del div */
+            background-color: rgba(45, 188, 254, 0.704);
+            border-radius: 50px; /* Radio de borde para redondear los bordes */
+
+        }
+        .celeste2{
+            width: 90%; /* Ancho del div */
+            background-color: rgba(255, 255, 255, 0.489);
+            border-radius: 75px; /* Radio de borde para redondear los bordes */
+            padding: 5%;
+        }
+
+        .aqua3{
+            margin-left: auto;
+            margin-right: auto;
+            width: 600px; /* Ancho del div */
+            height: 200px; /* Altura del div */
+            background-color: rgba(45, 188, 254, 0.704) ;
+            border-radius: 50px; /* Radio de borde para redondear los bordes */
+
+
+        }
+
+
+    /* Estilos para el contenedor externo */
+        .outer-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50%;
+        }
+
+
+        /* Estilos para el contenedor interno */
+        .inner-container {
+            text-align: center;
+        }
+
+
+        /* Estilos para el botón de rango personalizado */
+        .slider-container {
+            position: relative;
+            width: 300px; /* Ancho del botón de rango */
+        }
+
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to right, #007bff, #007bff); /* Color del botón de rango */
+            border: none;
+            border-radius: 10px; /* Estilo de los bordes */
+            outline: none; /* Quita el contorno predeterminado */
+            transition: background-size 0.3s ease; /* Transición de la posición de fondo */
+        }
+
+
+        /* Estilos para los puntos de parada y el texto */
+        .slider-label {
+            position: absolute;
+        
+            height: 100%;
+            text-align: center;
+            transform: translateX(-50%);
+        }
+
+
+        .slider-label:nth-child(1) {
+            left: 0%;
+        }
+
+
+        .slider-label:nth-child(2) {
+            left: 25%;
+        }
+
+
+        .slider-label:nth-child(3) {
+            left: 50%;
+        }
+
+
+        .slider-label:nth-child(4) {
+            left: 75%;
+        }
+
+
+        .slider-label:nth-child(5) {
+            left: 100%;
+        }
+
+
+
+
+/* pagina de A */
+
+
+.container {
+    text-align: center;
+    border: 5px solid rgba(45, 188, 254, 0.313);
+    border-radius: 5%;
+    padding: 20px;
+}
+
+/* Estilos CSS para los botones en la primera fila */
+.row1 {
+    margin: 20px 0;
+}
+
+
+
+
+
+

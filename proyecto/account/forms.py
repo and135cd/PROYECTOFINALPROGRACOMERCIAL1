@@ -8,6 +8,7 @@ class PropietarioForm(forms.ModelForm):
         fields = ['nombre', 'apellido','direccion', 'telefono' ]  # Ajusta los campos según tus necesidades
 
 class MascotaForm(forms.ModelForm):
+    edad = forms.IntegerField(label='Edad en años')
     class Meta:
         model = Mascota
         fields = ['nombre','especie','genero','raza','edad']
