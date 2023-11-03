@@ -1,0 +1,68 @@
+{% extends "customer.html" %}
+{% block content %}
+<div class="container">
+  <h3>Publicar servicio de peluqueria</h3>
+  <form method="post" id="peluqueriaForm" class="mb-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    
+    <label>Ingrese su ubicacion en el mapa</label>
+    <div id="mapid" class="my-3"></div>
+    <input type="hidden" id="ubicacion" name="ubicacion" />
+    <button type="submit" class="btn btn-primary mt-3">Publicar anuncio</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var mymap = L.map('mapid').setView([14.8349, -91.5188], 13);  // Coordenadas de Quetzaltenango
+
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mymap);
+    
+    var marker;
+
+    function updateMarker(lat, lng) {
+      var newLatLng = new L.LatLng(lat, lng);
+      if (marker) {
+        marker.setLatLng(newLatLng);
+      } else {
+        marker = L.marker(newLatLng, {draggable: true}).addTo(mymap);
+      }
+      mymap.setView(newLatLng, 13);
+      document.getElementById('ubicacion').value = lat + "," + lng;
+    }
+
+    mymap.on('click', function(e) {
+      updateMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    mymap.on('locationfound', function(e) {
+      updateMarker(e.latlng.lat, e.latlng.lng);
+      mymap.fitBounds(e.bounds);
+    });
+
+    mymap.on('locationerror', function(e) {
+      alert("No se pudo acceder a la ubicación automáticamente. Haz clic en el mapa para seleccionar tu ubicación.");
+    });
+
+    mymap.locate({setView: true, maxZoom: 16});
+
+    marker.on('dragend', function(event) {
+      updateMarker(marker.getLatLng().lat, marker.getLatLng().lng);
+    });
+  });
+</script>
+
+<style>
+  #mapid { height: 400px; width: 100%; }
+  .btn-primary { width: 100%; }
+</style>
+
+{% endblock %}

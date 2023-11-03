@@ -11,6 +11,7 @@
                 <h4 class="card-title">Propietario</h4>
                 <p class="card-text">Nombre: {{ solicitud.propietario.nombre }} {{ solicitud.propietario.apellido }}</p>
                 <p class="card-text">Teléfono: {{ solicitud.propietario.telefono }}</p>
+
                 <!-- Agrega aquí más detalles del propietario si es necesario -->
             </div>
             
@@ -44,9 +45,28 @@
                 <p class="card-text"><strong>Fin:</strong> {{ solicitud.fecha_fin }} a las {{ solicitud.hora_fin }}</p>
                 <p class="card-text"><strong>Ubicación:</strong> {{ solicitud.ubicacion_servicio }}</p>
                 <p class="card-text"><strong>Descripcion:</strong> {{ solicitud.descripcion }}</p>
+                <p class="card-text"><strong>Precio del servicio:</strong> Q {{ solicitud.precio }}</p>
+
             </div>
         </div>
     </div>
+    <div class="text-center">
+        <!-- Botón para aceptar la solicitud -->
+        <form method="post" action="{% url 'aceptar_solicitud' solicitud.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Aceptar</button>
+        </form>
+    
+        <!-- Botón para rechazar la solicitud -->
+        <form method="post" action="{% url 'rechazar_solicitud' solicitud.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Rechazar</button>
+        </form>
+
+        <a class="btn btn-secondary" href="{%url 'solicitudes-cercanas' user.cuidador.id%}">Regresar</a>
+    </div>
+    
 </div>
+
 
 {% endblock %}

@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-ktfdaly+nl0ue0^0(3%zkid-d!ip1o+!-=a#psrqv&0fo+#z+m
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 #SMTP CONFIGURACION
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

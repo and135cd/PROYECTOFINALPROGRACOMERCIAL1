@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from account.models import User
+from django.http import HttpResponseForbidden
+
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.core.mail import send_mail
@@ -8,7 +10,7 @@ from django.http import HttpResponse
 from geopy.distance import geodesic
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm, GuarderiaForm, PeluqueriaForm, SolicitudDeCuidadoForm
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 from datetime import datetime, timedelta
 from datetime import date 
@@ -361,6 +363,88 @@ def ver_solicitud(request, solicitud_id):
     
     return render(request, 'cuidadores/solicitud_detalle.html', context)
 
+def ver_solicitud_cliente(request, solicitud_id):
+    # Obtener la solicitud específica y las mascotas relacionadas.
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    mascotas = solicitud.mascotas.all()  # Obtener todas las mascotas relacionadas con la solicitud
+
+    # Pasar la solicitud y las mascotas al contexto de la plantilla.
+    context = {
+        'solicitud': solicitud,
+        'mascotas': mascotas,
+    }
+    
+    return render(request, 'clientes/detalle_solicitud.html', context)
+
+
+@login_required
+def editar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id, propietario=request.user.propietario)
+    if request.method == 'POST':
+        form = SolicitudDeCuidadoForm(request.POST, instance=solicitud)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Solicitud actualizada')
+            return redirect('listar_solicitudes_de_cuidado')
+    else:
+        form = SolicitudDeCuidadoForm(instance=solicitud)
+    return render(request, 'clientes/editar_solicitud.html', {'form': form})
+
+
+@login_required
+def eliminar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    
+    if solicitud.propietario.user != request.user:
+        return HttpResponseForbidden("No tienes permiso para eliminar esta solicitud.")
+
+    if request.method == 'POST':
+        solicitud.delete()
+        messages.success(request, 'La solicitud de cuidado ha sido eliminada.')
+        return redirect('lista_solicitudes')  # Asumiendo que tienes una vista que muestra la lista de solicitudes.
+    
+    return render(request, 'clientes/eliminar_solicitud.html', {'solicitud': solicitud})
+@login_required
+def aceptar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    
+    if request.user.is_employee:  # Suponiendo que 'is_employee' es como determinas si el usuario es un cuidador
+        if solicitud.estado not in ['Aceptada', 'Rechazada']:  # Comprueba que la solicitud no haya sido ya aceptada o rechazada
+            solicitud.aceptar(request.user.cuidador)  # Llamas al método aceptar
+            # Aquí se envia un correo
+            subject = "Tu solicitud de cuidado ha sido aceptada"
+            message = f"Hola {solicitud.propietario.user.nombre()},\n\n" \
+                    f"Tu solicitud de cuidado para la fecha {solicitud.fecha_inicio} ha sido aceptada por {request.user.get_full_name()}.\n" \
+                    "Pronto se pondrán en contacto contigo para más detalles."
+            email_from = request.user.email
+            recipient_list = [solicitud.propietario.user.email]
+            
+            send_mail(subject, message, email_from, recipient_list)
+            messages.success(request, "Has aceptado la solicitud.")
+            return redirect('detalle_solicitud', solicitud_id=solicitud_id)
+        else:
+            messages.warning(request, "Esta solicitud ya ha sido respondida.")
+            return redirect('detalle_solicitud', solicitud_id=solicitud_id)
+    else:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción")
+    
+
+@login_required
+def rechazar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    
+    if request.user.is_employee:  # Asumiendo que 'is_employee' indica que el usuario es un cuidador
+        if solicitud.estado not in ['Aceptada', 'Rechazada']:  # Verifica que la solicitud no ha sido previamente aceptada o rechazada
+            solicitud.rechazar(request.user.cuidador)  # Llama al método rechazar
+            # Puede ser una buena idea enviar una notificación al propietario aquí
+            messages.success(request, "Has rechazado la solicitud.")
+            return redirect('detalle_solicitud', solicitud_id=solicitud_id)
+        else:
+            messages.warning(request, "Esta solicitud ya ha sido respondida.")
+            return redirect('detalle_solicitud', solicitud_id=solicitud_id)
+    else:
+        return HttpResponseForbidden("No tienes permiso para realizar esta acción")
+
 @login_required
 def registrar_datos_propietario(request):
     # Obtén el token actual del usuario autenticado
@@ -506,7 +590,7 @@ def editar_mascota(request, pk):
     mascota = get_object_or_404(Mascota, pk=pk)
     
     # Verifica si la mascota pertenece al propietario autenticado
-    if mascota.propietario != request.user.propietario:
+    if mascota.propietario != request.propietario.user:
         return HttpResponse('No tienes permiso para editar esta mascota.')
 
     if request.method == 'POST':
@@ -561,7 +645,7 @@ def publicar_alojamiento(request):
                 except ValueError:
                     messages.error(request, "La ubicación proporcionada es inválida.")
                     return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
-                
+            solicitud.calcular_precio()    
             solicitud.save()
             form.save_m2m()  # Guarda las relaciones ManyToMany con las mascotas
             
@@ -586,7 +670,7 @@ def publicar_paseo(request):
             
             # Intenta obtener el objeto TipoDeCuidado con el nombre 'Paseo'
             try:
-                tipo_paseo, created = TipoDeCuidado.objects.get_or_create(nombre='Paseo')
+                tipo_paseo = TipoDeCuidado.objects.get(nombre='Paseo')
             except ObjectDoesNotExist:
                 messages.error(request, "No se pudo encontrar el tipo de cuidado 'Paseo'.")
                 return render(request, 'cuidados/publicar_paseo.html', {'form': form})
@@ -603,23 +687,116 @@ def publicar_paseo(request):
                 except ValueError:
                     messages.error(request, "La ubicación proporcionada es inválida.")
                     return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
-                
+            solicitud.calcular_precio()    
             solicitud.save()
-            form.save_m2m()  # Guarda las relaciones ManyToMany con las mascotas
+            form.save_m2m()  
             
             messages.success(request, "La solicitud de paseo ha sido publicada con éxito.")
             return redirect('listar_solicitudes_de_cuidado')
     else:
-        # Crear un objeto TipoDeCuidado llamado "Paseo" si no existe
+        
         tipo_paseo = TipoDeCuidado.objects.get(nombre='Paseo')
         
         form = PaseoForm(initial={'tipo_de_cuidado': tipo_paseo})
         
-        # Filtra las mascotas del propietario autenticado
+        
         propietario = request.user.propietario
         form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
 
     return render(request, 'cuidados/publicar_paseo.html', {'form': form})
+
+@login_required
+def publicar_guarderia(request):
+    if request.method == 'POST':
+        form = GuarderiaForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.propietario = request.user.propietario
+            solicitud.estado = 'Pendiente'
+            
+            # Intenta obtener el objeto TipoDeCuidado con el nombre 'Guarderia'
+            try:
+                tipo_guarderia = TipoDeCuidado.objects.get(nombre='Guarderia')
+            except ObjectDoesNotExist:
+                messages.warning(request, "No se pudo encontrar el tipo de cuidado 'Guarderia'.")
+                return render(request, 'cuidados/publicar_guarderia.html', {'form': form})
+            
+            solicitud.tipo_cuidado = tipo_guarderia
+            
+            # Obtiene las coordenadas de la ubicación desde el formulario
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                try:
+                    lat, lng = map(float, ubicacion.split(','))
+                    solicitud.latitud = lat
+                    solicitud.longitud = lng
+                except ValueError:
+                    messages.error(request, "La ubicación proporcionada es inválida.")
+                    return render(request, 'cuidados/publicar_guarderia.html', {'form': form})
+            solicitud.calcular_precio()    
+            solicitud.save()
+            form.save_m2m()  
+            
+            messages.success(request, "La solicitud de guarderia ha sido publicada con éxito.")
+            return redirect('listar_solicitudes_de_cuidado')
+    else:
+        
+        tipo_guarderia = TipoDeCuidado.objects.get(nombre='Guarderia')
+        
+        form = GuarderiaForm(initial={'tipo_de_cuidado': tipo_guarderia})
+        
+        
+        propietario = request.user.propietario
+        form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
+
+    return render(request, 'cuidados/publicar_guarderia.html', {'form': form})
+
+@login_required
+def publicar_peluqueria(request):
+    if request.method == 'POST':
+        form = PeluqueriaForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.propietario = request.user.propietario
+            solicitud.estado = 'Pendiente'
+            
+            # Intenta obtener el objeto TipoDeCuidado con el nombre 'Peluqueria'
+            try:
+                tipo_peluqueria = TipoDeCuidado.objects.get(nombre='Peluqueria')
+            except ObjectDoesNotExist:
+                messages.error(request, "No se pudo encontrar el tipo de cuidado 'Peluqueria'.")
+                return render(request, 'cuidados/publicar_peluqueria.html', {'form': form})
+            
+            solicitud.tipo_de_cuidado = tipo_peluqueria
+            
+            # Obtiene las coordenadas de la ubicación desde el formulario
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                try:
+                    lat, lng = map(float, ubicacion.split(','))
+                    solicitud.latitud = lat
+                    solicitud.longitud = lng
+                except ValueError:
+                    messages.error(request, "La ubicación proporcionada es inválida.")
+                    return render(request, 'cuidados/publicar_peluqueria.html', {'form': form})
+            solicitud.calcular_precio()    
+            solicitud.save()
+            form.save_m2m()  
+            
+            messages.success(request, "La solicitud de peluqueria ha sido publicada con éxito.")
+            return redirect('listar_solicitudes_de_cuidado')
+    else:
+        
+        tipo_peluqueria = TipoDeCuidado.objects.get(nombre='Peluqueria')
+        
+        form = PeluqueriaForm(initial={'tipo_de_cuidado': tipo_peluqueria})
+        
+        
+        propietario = request.user.propietario
+        form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
+
+    return render(request, 'cuidados/publicar_peluqueria.html', {'form': form})
+
 
 @login_required
 def listar_solicitudes_de_cuidado(request):

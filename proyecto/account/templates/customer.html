@@ -42,14 +42,16 @@
                   <a class="btn btn-info m-1" href="{% url 'listar_mascotas' %}">Mascotas</a>
                 </li>
                 <li class="nav-item">
-                  <a class="btn btn-info m-1" href="{% url 'listar_solicitudes_de_cuidado' %}">Solicitudes</a>
+                  <a class="btn btn-info m-1" href="{% url 'listar_solicitudes_de_cuidado' %}">Ver mis solicitudes</a>
                 </li>
               {%else%}
                 <li class="nav-item">
                   <a class="btn btn-info m-1" href="{% url 'registro_datos_propietario' %}">Registrar datos de propietario</a>
                 </li>
               {% endif %}
-              
+              <li class="nav-item">
+                <a class=" btn btn-info m-1" href="{% url 'inicio' %}">Inicio</a>
+              </li>
               <li class="nav-item">
                 <a class=" btn btn-danger m-1" href="{% url 'logout' %}">Cerrar sesión</a>
               </li>

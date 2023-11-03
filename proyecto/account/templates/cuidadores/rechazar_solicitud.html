@@ -1,0 +1,12 @@
+{%extends "employee.html"%}
+{%load static%}
+{%block content%}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <p>¿Estás seguro de que quieres rechazar esta solicitud?</p>
+        <input type="submit" value="Rechazar" />
+    </form>
+</div>
+
+{%endblock%}
