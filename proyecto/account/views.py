@@ -3,10 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from account.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.core.mail import send_mail
 from django.http import HttpResponse  
+from geopy.distance import geodesic
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 from datetime import datetime, timedelta
 from datetime import date 
@@ -149,9 +151,47 @@ def registro(request):
     return render(request, 'registro.html', {'form': form})
 
 
+@login_required
 def inicio(request):
-    return render(request, 'inicio.html')
+    # Supongamos que tienes la latitud y longitud del propietario
+    propietario = Propietario.objects.get(user=request.user)
+    propietario_location = (propietario.latitud, propietario.longitud)
 
+    # Obtener todos los cuidadores (en un sistema real, probablemente querrás limitar esto)
+    todos_los_cuidadores = Cuidador.objects.all()
+
+    # Calcula la distancia y filtra los cuidadores dentro de un radio de 10 kilómetros
+    cuidadores_cercanos = []
+    for cuidador in todos_los_cuidadores:
+        cuidador_location = (cuidador.latitud, cuidador.longitud)
+        distance = geodesic(propietario_location, cuidador_location).km
+        if distance <= 10:  # Cambia 10 por la distancia que consideres 'cercana'
+            cuidador.distance = distance
+            cuidadores_cercanos.append(cuidador)
+
+    # Ordena por la distancia calculada
+    cuidadores_cercanos.sort(key=lambda x: x.distance)
+
+    return render(request, 'inicio.html', {'cuidadores_cercanos': cuidadores_cercanos})
+
+def contactar_cuidador(request, cuidador_id):
+    cuidador = get_object_or_404(Cuidador, pk=cuidador_id)
+    
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            sender = form.cleaned_data['email']
+            recipients = [cuidador.user.email] 
+            
+            send_mail(subject, message+ "\nmensaje de parte de: "+request.user.email, sender, recipients)
+            messages.success(request,"Mensaje enviado a cuidador")
+            return redirect('inicio')
+    else:
+        form = ContactForm(initial={'email': cuidador.user.email})
+
+    return render(request, 'cuidadores/contactar_cuidador.html', {'cuidador': cuidador, 'form': form})
 
 def login_view(request):
     if request.method == 'POST':

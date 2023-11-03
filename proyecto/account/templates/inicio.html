@@ -1,96 +1,60 @@
-
-{%extends "customer.html"%}
-{%load static%}
-{%block content%}
- <!--Cuidamos de tu mascota-->
- <div class='m-2'>
+{% extends "customer.html" %}
+{% load static %}
+{% block content %}
+<!-- Cuidamos de tu mascota -->
+<div class='m-2'>
     <h4 class="center">Cuidamos tu mascota</h4>
-  </div>
+</div>
 
-
-  <!-- ¿Desea algun tipo de cuidado? -->
-  <div class=" aqua  div-redondeado centrar" >
-    <h2 style="text-align: left; color: black;" class="mb-4">¿Desea algun tipo de cuidado?</h2>
+<!-- ¿Desea algun tipo de cuidado? -->
+<div class="aqua div-redondeado centrar">
+    <h2 style="text-align: left; " class="mb-4">¿Desea algun tipo de cuidado?</h2>
     <div class="celeste div-redondeado"> 
-      <h1 class=""><a class="btn btn-light btn-lg celeste2" href="{% url 'cuidados' %}"><h1>Publicar anuncio</h1></a></h1>
+        <h1><a class="btn btn-light btn-lg celeste2" href="{% url 'cuidados' %}">Publicar anuncio</a></h1>
     </div>
-  </div>
+</div>
 
-  <!-- RECOMENDADOS -->
-  <div class=" aqua div-redondeado centrar mt-3">
-    <h3 class="mb-4">Cuidadores cercanos a ti</h3>
-    
+<!-- RECOMENDADOS -->
+<div class="aqua div-redondeado centrar mt-3">
+    <h3 class="mb-4 text-center">Cuidadores cercanos a ti</h3>
     {% if cuidadores_cercanos %}
-        <div class="row">
+    <div id="cuidadoresCarousel" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
             {% for cuidador in cuidadores_cercanos %}
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm aqua">
-                        <div class="card-body">
-                            <p class="card-text">Nombre: {{ cuidador.nombre }} {{ cuidador.apellido }}</p>
-                            <p class="card-text">Dirección: {{ cuidador.direccion }}</p>
-                            <p class="card-text">Teléfono: {{ cuidador.telefono }}</p>
-                            <!-- Si necesitas mostrar la ubicación en un mapa, podrías usar las coordenadas -->
-                            <!-- Ejemplo: <div id="map-{{ cuidador.pk }}"></div> y luego inicializar el mapa con JavaScript -->
-                            <!-- Asegúrate de tener los permisos para mostrar datos sensibles como la dirección -->
-                        </div>
-                        <div class="card-footer">
-                            <!-- Puedes colocar enlaces para ver más detalles o contactar al cuidador -->
-                            <a href="{% url 'contactar_cuidador' cuidador.pk %}" class="btn btn-primary">Contactar</a>
-                        </div>
+            <li data-bs-target="#cuidadoresCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+            {% for cuidador in cuidadores_cercanos %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="center "> 
+                    <div class="carousel-caption d-none d-md-block mt-5">
+                        <h5>{{ cuidador.nombre }} {{ cuidador.apellido }}</h5>
+                        <p>{{ cuidador.descripcion }}</p>
+                    
                     </div>
+                    <a href="{% url 'contactar_cuidador' cuidador.pk %}" class="btn btn-primary">Contactar</a>
+                </div>
+
+        
                 </div>
             {% endfor %}
+
         </div>
+        <a class="carousel-control-prev" href="#cuidadoresCarousel" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </a>
+        <a class="carousel-control-next" href="#cuidadoresCarousel" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </a>
+    </div>
     {% else %}
-        <!-- Mensaje de no hay cuidadores dentro del div redondeado -->
-        <div class="alert alert-info text-center p-3 mb-2 btn btn-light celeste2">
-            No hay cuidadores cercanos para mostrar.
-        </div>
+    <div class="alert alert-info text-center p-3 mb-2 btn btn-light celeste2">
+        No hay cuidadores cercanos para mostrar.
+    </div>
     {% endif %}
 </div>
-   
-   
-      <!-- Tercera parte Botones -->
 
-
-   
-  </div>
-
-
-  <!-- COSTOS -->
-  <div class="aqua3 mt-4 " >
-    <h1 class="center" style="color: black;">Costos</h1>
-    <div class="outer-container">
-      <div class="inner-container">
-          <div class="slider-container">
-              <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
-              <div class="slider-label" style="color: black;">Q25</div>
-              <div class="slider-label" style="color: black;">Q50</div>
-              <div class="slider-label" style="color: black;">Q75</div>
-              <div class="slider-label" style="color: black;">Q100</div>
-              <div class="slider-label" style="color: black;">Q5</div>
-              <button type="button" class="btn btn-light mt-5 ">Siguiente</button>
-          </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
-      const slider = document.getElementById("myRange");
-
-
-      // Función para actualizar el valor en los elementos de etiqueta
-      slider.addEventListener("input", function () {
-          const value = this.value;
-          const labels = document.querySelectorAll(".slider-label");
-          labels.forEach((label) => {
-              label.style.transform = `translateX(-50%) translateX(${value}%)`;
-          });
-      });
-  </script>
-
-{%endblock%}
+{% endblock %}

@@ -27,6 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#SMTP CONFIGURACION
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'gaby26@mesoamericana.edu.gt'
+EMAIL_HOST_PASSWORD = '102N14J6'
+EMAIL_USE_TLS = True
 
 # Application definition
 

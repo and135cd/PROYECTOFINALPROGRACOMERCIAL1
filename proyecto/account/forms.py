@@ -11,7 +11,12 @@ class CuidadorForm(forms.ModelForm):
     class Meta:
         model = Cuidador
         fields = ['nombre', 'apellido','direccion', 'telefono' ]  
-        
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(max_length=100)
+    message = forms.CharField(widget=forms.Textarea)
+    email = forms.EmailField()
+    
 class MascotaForm(forms.ModelForm):
     edad = forms.IntegerField(label='Edad en años')
     class Meta:

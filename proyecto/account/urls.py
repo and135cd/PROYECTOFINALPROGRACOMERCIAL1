@@ -25,6 +25,6 @@ urlpatterns = [
     path('cuidados/',views.cuidados,name='cuidados'),
     path('publicar-alojamiento/', views.publicar_alojamiento, name='publicar_alojamiento'),
     path('publicar-paseo/', views.publicar_paseo, name='publicar_paseo'),
-
+ path('contactar-cuidador/<int:cuidador_id>/', views.contactar_cuidador, name='contactar_cuidador'),
     path('mis-solicitudes/', views.listar_solicitudes_de_cuidado, name='listar_solicitudes_de_cuidado'),
 ]
