@@ -4,24 +4,21 @@
 <div class="container">
   <h5>¿QUÉ TIPO DE SERVICIO DESEA?</h5>
   <!-- Primera fila con 6 botones -->
-  <div class="row row1 p-5">
+  <div class="row mt-3">
     <div class="col">
       <a class="btn btn-primary" href="{% url 'publicar_alojamiento' %}">Alojamiento <i class="fa fa-home"></i></a>
     </div>
     <div class="col">
-      <button class="btn btn-primary">Cuidado <i class="fa fa-paw"></i></button>
+      <a class="btn btn-primary" href="{% url 'publicar_paseo' %}">Paseo <i class="fa fa-tree"></i></a>
     </div>
     <div class="col">
-      <button class="btn btn-primary">Paseo <i class="fa fa-tree"></i></button>
+      <a class="btn btn-primary">Guardería <i class="fa fa-building"></i></a>
     </div>
     <div class="col">
-      <button class="btn btn-primary">Guardería <i class="fa fa-building"></i></button>
+      <a class="btn btn-primary">Peluquería <i class="fa fa-cut"></i></a>
     </div>
     <div class="col">
-      <button class="btn btn-primary">Peluquería <i class="fa fa-cut"></i></button>
-    </div>
-    <div class="col">
-      <button class="btn btn-primary">Taxi <i class="fa fa-taxi"></i></button>
+      <a class="btn btn-primary">Taxi <i class="fa fa-taxi"></i></a>
     </div>
   </div>
 </div>

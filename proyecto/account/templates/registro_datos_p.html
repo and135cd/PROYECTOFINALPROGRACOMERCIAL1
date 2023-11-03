@@ -1,0 +1,43 @@
+if request.method == 'POST':
+form = CuidadorForm(request.POST, instance=cuidador)
+if form.is_valid():
+# Asignar latitud y longitud antes de guardar el modelo
+ubicacion = request.POST.get('ubicacion', '')
+if ubicacion:
+    latitud, longitud = ubicacion.split(',')
+    cuidador.latitud = float(latitud)
+    cuidador.longitud = float(longitud)
+cuidador = form.save(commit=False)  # Guardar el objeto Cuidador después de asignar la latitud y longitud
+cuidador.save()
+messages.success(request, "Sus datos han sido guardados correctamente.")
+return redirect('employee')
+
+
+
+@login_required
+def editar_datos_cuidador(request):
+    try:
+        cuidador = Cuidador.objects.get(user=request.user)
+
+        if request.method == 'POST':
+            form = CuidadorForm(request.POST, instance=cuidador)
+            if form.is_valid():
+                # Asignar latitud y longitud antes de guardar el modelo
+                ubicacion = request.POST.get('ubicacion', '')
+                if ubicacion:
+                    latitud, longitud = ubicacion.split(',')
+                    cuidador.latitud = float(latitud)
+                    cuidador.longitud = float(longitud)
+                cuidador = form.save(commit=False)
+                cuidador.save()
+                messages.success(request, "Sus datos han sido actualizados correctamente.")
+                return redirect('listar_datos_cuidador')  
+        else:
+            form = CuidadorForm(instance=cuidador)
+
+        return render(request, 'cuidadores/editar_datos_cuidador.html', {
+            'form': form,
+            'cuidador': cuidador  # Pasamos el objeto cuidador para acceder a la latitud y longitud en el template
+        })
+    except Cuidador.DoesNotExist:
+        return redirect('registrar_datos_cuidador')

@@ -6,7 +6,7 @@ from django import forms
 from django.http import HttpResponse  
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 from datetime import datetime, timedelta
 from datetime import date 
@@ -59,6 +59,8 @@ def cuidados(request):
     else:
         messages.error(request, 'No tienes permiso para ver esta página.')
         return redirect('inicio')
+    
+
 def registroAdmin(request):
     if request.method == 'POST':
         # Define el formulario personalizado directamente en la vista
@@ -328,31 +330,31 @@ def registrar_datos_propietario(request):
     try:
         # Intenta obtener los datos de propietario del usuario actual
         propietario = Propietario.objects.get(user=request.user)
-        
-        # Si ya existen datos de propietario, carga esos datos en el formulario para su edición
-        if request.method == 'POST':
-            form = PropietarioForm(request.POST, instance=propietario)
-        else:
-            form = PropietarioForm(instance=propietario)
+        form = PropietarioForm(instance=propietario)
     except Propietario.DoesNotExist:
-        # Si no existen datos de propietario, crea un nuevo formulario para la creación
-        if request.method == 'POST':
-            form = PropietarioForm(request.POST)
-        else:
-            form = PropietarioForm()
-    
+        propietario = None
+        form = PropietarioForm()
+
     if request.method == 'POST':
+        form = PropietarioForm(request.POST, instance=propietario)
         if form.is_valid():
             propietario = form.save(commit=False)
             propietario.user = request.user
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                latitud, longitud = ubicacion.split(',')
+                propietario.latitud = float(latitud)
+                propietario.longitud = float(longitud)
             propietario.save()
             
-            # Verifica si el usuario viene de hacer clic en "Mascotas" y redirige en consecuencia
-            if from_menu:
-                return redirect('listar_mascotas')
-            else:
-                return redirect('customer')
 
+            # Redirige después de la creación/actualización
+            if from_menu:
+                messages.success(request, "Tus datos han sido registrados correctamente.")
+                return redirect('listar_mascotas')
+            messages.success(request, "Tus datos han sido registrados correctamente.")
+            return redirect('inicio')
+        
     # Renderiza la página de registro y establece el token en la cookie
     response = render(request, 'registro_datos_propietario.html', {'form': form})
     response.set_cookie('token', current_token, httponly=True, secure=True)
@@ -384,17 +386,32 @@ def editar_datos_propietario(request):
         if request.method == 'POST':
             form = PropietarioForm(request.POST, instance=propietario)
             if form.is_valid():
-                form.save()
+                # Primero guardamos el formulario
+                propietario = form.save(commit=False)
+
+                # Luego actualizamos la latitud y longitud si están presentes
+                ubicacion = request.POST.get('ubicacion', '')
+                if ubicacion:
+                    latitud, longitud = ubicacion.split(',')
+                    propietario.latitud = float(latitud)
+                    propietario.longitud = float(longitud)
+
+                # Finalmente, guardamos el objeto propietario
+                propietario.save()
+
+                messages.success(request, "Sus datos han sido actualizados correctamente.")
                 return redirect('listar_datos_propietario')
         else:
             form = PropietarioForm(instance=propietario)
 
         context = {
             'form': form,
+            'propietario': propietario,
         }
         return render(request, 'editar_datos_propietario.html', context)
     except Propietario.DoesNotExist:
-        return render(request, 'registrar_datos_propietario.html')
+        messages.error(request, "No se encontró el perfil del propietario.")
+        return redirect('registrar_datos_propietario')
     
 
 def customer(request):
@@ -517,6 +534,53 @@ def publicar_alojamiento(request):
         form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
 
     return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+
+@login_required
+def publicar_paseo(request):
+    if request.method == 'POST':
+        form = PaseoForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.propietario = request.user.propietario
+            solicitud.estado = 'Pendiente'
+            
+            # Intenta obtener el objeto TipoDeCuidado con el nombre 'Paseo'
+            try:
+                tipo_paseo, created = TipoDeCuidado.objects.get_or_create(nombre='Paseo')
+            except ObjectDoesNotExist:
+                messages.error(request, "No se pudo encontrar el tipo de cuidado 'Paseo'.")
+                return render(request, 'cuidados/publicar_paseo.html', {'form': form})
+            
+            solicitud.tipo_de_cuidado = tipo_paseo
+            
+            # Obtiene las coordenadas de la ubicación desde el formulario
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                try:
+                    lat, lng = map(float, ubicacion.split(','))
+                    solicitud.latitud = lat
+                    solicitud.longitud = lng
+                except ValueError:
+                    messages.error(request, "La ubicación proporcionada es inválida.")
+                    return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+                
+            solicitud.save()
+            form.save_m2m()  # Guarda las relaciones ManyToMany con las mascotas
+            
+            messages.success(request, "La solicitud de paseo ha sido publicada con éxito.")
+            return redirect('listar_solicitudes_de_cuidado')
+    else:
+        # Crear un objeto TipoDeCuidado llamado "Paseo" si no existe
+        tipo_paseo = TipoDeCuidado.objects.get(nombre='Paseo')
+        
+        form = PaseoForm(initial={'tipo_de_cuidado': tipo_paseo})
+        
+        # Filtra las mascotas del propietario autenticado
+        propietario = request.user.propietario
+        form.fields['mascotas'].queryset = Mascota.objects.filter(propietario=propietario)
+
+    return render(request, 'cuidados/publicar_paseo.html', {'form': form})
+
 @login_required
 def listar_solicitudes_de_cuidado(request):
     propietario = request.user.propietario

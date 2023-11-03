@@ -68,7 +68,7 @@ class SolicitudDeCuidado(models.Model):
     fecha_solicitud = models.DateField()
     fecha_inicio = models.DateField()
     hora_inicio = models.TimeField()
-    fecha_fin = models.DateField(blank=True)
+    fecha_fin = models.DateField(blank=True, null=True) 
     hora_fin = models.TimeField()
     ubicacion_servicio = models.CharField(max_length=200, null=True, blank=True)
     latitud = models.FloatField(null=True, blank=True)

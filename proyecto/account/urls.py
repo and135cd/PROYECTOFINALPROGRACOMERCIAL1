@@ -24,5 +24,7 @@ urlpatterns = [
     path('eliminar-mascota/<int:pk>/', views.eliminar_mascota,name="eliminar_mascota"),
     path('cuidados/',views.cuidados,name='cuidados'),
     path('publicar-alojamiento/', views.publicar_alojamiento, name='publicar_alojamiento'),
+    path('publicar-paseo/', views.publicar_paseo, name='publicar_paseo'),
+
     path('mis-solicitudes/', views.listar_solicitudes_de_cuidado, name='listar_solicitudes_de_cuidado'),
 ]

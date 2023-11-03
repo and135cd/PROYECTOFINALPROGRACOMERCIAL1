@@ -17,103 +17,37 @@
   </div>
 
   <!-- RECOMENDADOS -->
-  <div class=" aqua2 div-redondeado2 mt-4 centrar2">
-    <h3 class="center" style="color: black;">Recomendados</h3>
-    <div class="container text-center celeste2">
-      <!-- primera parte Perfil-->
-      <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
-        <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  <div class=" aqua div-redondeado centrar mt-3">
+    <h3 class="mb-4">Cuidadores cercanos a ti</h3>
+    
+    {% if cuidadores_cercanos %}
+        <div class="row">
+            {% for cuidador in cuidadores_cercanos %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm aqua">
+                        <div class="card-body">
+                            <p class="card-text">Nombre: {{ cuidador.nombre }} {{ cuidador.apellido }}</p>
+                            <p class="card-text">Dirección: {{ cuidador.direccion }}</p>
+                            <p class="card-text">Teléfono: {{ cuidador.telefono }}</p>
+                            <!-- Si necesitas mostrar la ubicación en un mapa, podrías usar las coordenadas -->
+                            <!-- Ejemplo: <div id="map-{{ cuidador.pk }}"></div> y luego inicializar el mapa con JavaScript -->
+                            <!-- Asegúrate de tener los permisos para mostrar datos sensibles como la dirección -->
+                        </div>
+                        <div class="card-footer">
+                            <!-- Puedes colocar enlaces para ver más detalles o contactar al cuidador -->
+                            <a href="{% url 'contactar_cuidador' cuidador.pk %}" class="btn btn-primary">Contactar</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <!-- Primer perfil  -->
-            <div>
-              <!-- Usuario -->
-              <div class="row mb-3 ">
-                <img class="imagen-redonda" src="https://www.exitopersonal.com/imagenes/8-cosas-que-las-personas-felices-nunca-hacen_x2.jpg" alt="Mi imagen" width="50%" height="50%">
-                <!-- Imagen redonda -->
-
-
-                <div class="col-sm-6">
-                  <h3 class="textalingleft ">Mario de la Cruz</h3>
-                  <h6  class="textalingleft ">Cuidador desde 2022</h6>
-                </div>  
-                <img class="imagen-redondaMeGusta alineadaDerecha" src="https://cdn-icons-png.flaticon.com/512/7579/7579707.png" alt="Mi imagen" width="20%" height="10%">  
-         
-              </div>
-              <!-- descripcion  -->
-              <div class="">
-                  <img src="https://s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/09/11124552/GettyImages-544673512.jpg" class="imagen-redondaDescripcion" alt="..." >
-              </div>
-            </div>
-          </div>
-         
-           <!-- Segundo Perfil -->
-          <div class="carousel-item">  
-            <div>
-              <!-- Usuario -->
-              <div class="row mb-3 ">
-                <!-- Imagen redonda de perfik -->
-                <img class="imagen-redonda" src="https://images.ecestaticos.com/tH9eFLVK0XZQZm6XwlsUzdPc0Pc=/40x0:1372x999/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2F880%2F90e%2Ff88%2F88090ef8823801c0f19287c01dce1b8b.jpg" alt="Mi imagen" width="50%" height="50%">      
-                <!-- Descripcion -->
-                <div class="col-sm-6">
-                  <h3 class="textalingleft ">Rony Carpio</h3>
-                  <h6  class="textalingleft ">Cuidar animales es mi pasion</h6>
-                </div>  
-                <!-- Imagen de me gusta -->
-                <img class="imagen-redondaMeGusta alineadaDerecha" src="https://i.pinimg.com/originals/06/cb/60/06cb6030d0477c0aed785fe479b2dbb7.png" alt="Mi imagen" width="20%" height="10%">  
-         
-              </div>
-              <!-- Imagen de prevista  -->
-              <div class="">
-                  <img src="https://fielpet.com.ar/blog/content/images/2021/06/22.jpg" class="imagen-redondaDescripcion" alt="..." >
-              </div>
-            </div>
-          </div>
-          <!-- Tercer Perfil  -->
-          <div class="carousel-item">
-            <div>
-              <!-- Usuario -->
-              <div class="row mb-3 ">
-                <!-- Imagen redonda de perfik -->
-                <img class="imagen-redonda" src="https://images.unsplash.com/photo-1542578951838-47d40e8b4f0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHBlcnNvbmFzJTIweSUyMGFuaW1hbGVzfGVufDB8fDB8fHww&w=1000&q=80" alt="Mi imagen" width="50%" height="50%">      
-                <!-- Descripcion -->
-                <div class="col-sm-6">
-                  <h3 class="textalingleft ">Gabriela ovalle</h3>
-                  <h6  class="textalingleft ">Me encantan los perros, tengo 2 en casa y son muy buenos</h6>
-                </div>  
-                <!-- Imagen de me gusta -->
-                <img class="imagen-redondaMeGusta alineadaDerecha" src="https://cdn-icons-png.flaticon.com/512/7579/7579707.png" alt="Mi imagen" width="20%" height="10%">  
-         
-              </div>
-              <!-- Imagen de prevista  -->
-              <div class="">
-                  <img  src="https://img.mestizos.cl/upload/2018/07/17161E5C4C43436D17150F55574941781F161C1853434178-1024x576.webp" class="imagen-redondaDescripcion" alt="..." >
-              </div>
-            </div>
-          </div>
+    {% else %}
+        <!-- Mensaje de no hay cuidadores dentro del div redondeado -->
+        <div class="alert alert-info text-center p-3 mb-2 btn btn-light celeste2">
+            No hay cuidadores cercanos para mostrar.
         </div>
-       
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-     
-    </div>
-
-
-    <div class="cc">
-      <button type="button" class="btn btn-light ">Seguir</button>
-      <button type="button" class="btn btn-light ">Ver mas...</button>
-    </div>
+    {% endif %}
+</div>
    
    
       <!-- Tercera parte Botones -->

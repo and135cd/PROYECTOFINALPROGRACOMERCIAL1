@@ -1,63 +1,58 @@
 {% extends "employee.html" %}
-{% load static %}
-{% block content %}
 
+{% block content %}
 <div class="container table-container">
-    <h3 class="mt-4">Editar datos del cuidador de mascotas</h3>
+    <h3 class="mt-4">Editar datos de cuidador de mascotas</h3>
     <form method="post" id="cuidadorForm">
         {% csrf_token %}
         <table class="table table-bordered">
             {{ form.as_table }}
         </table>
-        <label>Ingrese su ubicación en el mapa</label>
+        <label>Actualice su ubicacion en el mapa</label>
         <div id="mapid" class="my-3"></div>
-        <!-- Los campos ocultos para latitud y longitud -->
-        <input type="hidden" id="latitud" name="latitud" value="{{ cuidador.latitud }}" />
-        <input type="hidden" id="longitud" name="longitud" value="{{ cuidador.longitud }}" />
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
-            <a href="{% url 'listar_datos_cuidador' %}" class="btn btn-danger mt-3">Cancelar</a>
-        </div>
+        <input type="hidden" id="ubicacion" name="ubicacion" value="{{ cuidador.latitud }},{{ cuidador.longitud }}" />
+        <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
     </form>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var lat = {{ cuidador.latitud|default_if_none:"51.505" }};
-        var lng = {{ cuidador.longitud|default_if_none:"-0.09" }};
+  document.addEventListener('DOMContentLoaded', function() {
+    // Si latitud o longitud no están definidos, usa un valor predeterminado
+    var lat = {{ cuidador.latitud|default_if_none:"14.8349" }};
+    var lng = {{ cuidador.longitud|default_if_none:"-91.5188" }};
     
-        var mymap = L.map('mapid').setView([lat, lng], 13);
+    var mymap = L.map('mapid').setView([lat, lng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mymap);
     
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mymap);
-        
-        var marker = L.marker([lat, lng], {draggable: true}).addTo(mymap);
-    
-        function updateMarker(lat, lng) {
-          marker.setLatLng([lat, lng]);
-          mymap.panTo(new L.LatLng(lat, lng));
-          document.getElementById('latitud').value = lat;
-          document.getElementById('longitud').value = lng;
-        }
-    
-        mymap.on('click', function(e) {
-          updateMarker(e.latlng.lat, e.latlng.lng);
-        });
-    
-        marker.on('dragend', function(event) {
-          var position = marker.getLatLng();
-          updateMarker(position.lat, position.lng);
-        });
+    // Coloca el marcador en la ubicación actual
+    var marker = L.marker([lat, lng], {draggable: true}).addTo(mymap);
+
+    function updateMarker(lat, lng) {
+      marker.setLatLng([lat, lng]);
+      mymap.setView([lat, lng], 13);
+      document.getElementById('ubicacion').value = lat + "," + lng;
+    }
+
+    mymap.on('click', function(e) {
+      updateMarker(e.latlng.lat, e.latlng.lng);
     });
-    </script>
-    
+
+    marker.on('dragend', function(event) {
+      var position = marker.getLatLng();
+      updateMarker(position.lat, position.lng);
+    });
+  });
+</script>
 
 <style>
   #mapid { height: 400px; width: 100%; }
+  .btn-primary { width: 100%; }
 </style>
 
 {% endblock %}
