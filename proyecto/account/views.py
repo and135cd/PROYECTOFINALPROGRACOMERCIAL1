@@ -111,23 +111,33 @@ def registro(request):
         form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
 
         if form.is_valid():
-            # Procesa el formulario aquí
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
             user_type = form.cleaned_data['user_type']
-            # Crea el usuario en la base de datos y establece si es cuidador o usuario
+
+            # Comprueba si las contraseñas coinciden
+            if password != password2:
+                messages.error(request, "Las contraseñas no coinciden.")
+                return render(request, 'registro.html', {'form': form})
+
+            # Comprueba si el nombre de usuario ya existe
+            if User.objects.filter(username=username).exists():
+                messages.warning(request, "Ya existe ese usuario.")
+                return render(request, 'registro.html', {'form': form})
+
+            # Si el nombre de usuario no existe, crea el nuevo usuario
             user = User.objects.create_user(username=username, email=email, password=password)
             if user_type == 'customer':
                 user.is_customer = True
             elif user_type == 'employee':
                 user.is_employee = True
-            elif user_type=='admin':
-                user.is_admin=True
             user.save()
+
+            messages.success(request, "El usuario ha sido registrado exitosamente.")
             return redirect('login')
     else:
-        # Define el formulario personalizado directamente en la vista
         form = forms.Form()
         form.fields['username'] = forms.CharField(max_length=150, required=True)
         form.fields['email'] = forms.EmailField(max_length=254, required=True)
@@ -135,6 +145,7 @@ def registro(request):
         form.fields['password2'] = forms.CharField(widget=forms.PasswordInput, required=True)
         form.fields['user_type'] = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
     return render(request, 'registro.html', {'form': form})
+
 
 def inicio(request):
     return render(request, 'inicio.html')
