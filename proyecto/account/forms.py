@@ -1,6 +1,11 @@
 # forms.py
 from django import forms
-from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador, User
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
 
 class PropietarioForm(forms.ModelForm):
     class Meta:

@@ -1,0 +1,62 @@
+{% extends "employee.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="text-center">Detalle de la solicitud de cuidado</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h4 class="card-title">Propietario</h4>
+                <p class="card-text">Nombre: {{ solicitud.propietario.nombre }} {{ solicitud.propietario.apellido }}</p>
+                <p class="card-text">Teléfono: {{ solicitud.propietario.telefono }}</p>
+
+                <!-- Agrega aquí más detalles del propietario si es necesario -->
+            </div>
+            
+            <div class="mb-4">
+                <h4 class="card-title">Mascotas que necesitan cuidado</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Género</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mascota in mascotas %}
+                        <tr>
+                            <td>{{ mascota.nombre }}</td>
+                            <td>{{ mascota.especie }}</td>
+                            <td>{{ mascota.raza }}</td>
+                            <td>{{ mascota.genero }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Más información sobre la solicitud si es necesario -->
+            <div>
+                <p class="card-text"><strong>Inicio:</strong> {{ solicitud.fecha_inicio }} a las {{ solicitud.hora_inicio }}</p>
+                <p class="card-text"><strong>Fin:</strong> {{ solicitud.fecha_fin }} a las {{ solicitud.hora_fin }}</p>
+                <p class="card-text"><strong>Ubicación:</strong> {{ solicitud.ubicacion_servicio }}</p>
+                <p class="card-text"><strong>Descripcion:</strong> {{ solicitud.descripcion }}</p>
+                <p class="card-text"><strong>Precio del servicio:</strong> Q {{ solicitud.precio }}</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        
+
+        <a class="btn btn-secondary m-2" href="{%url 'ver_solicitudes_aceptadas'%}">Regresar</a>
+    </div>
+    
+</div>
+
+
+{% endblock %}

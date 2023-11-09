@@ -21,7 +21,7 @@
   <div class="content">
     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'employee' %}">
+        <a class="navbar-brand" href="{% url 'employee_inicio' %}">
           <img src="{% static 'images/Huellitas.png' %}" alt="Huellitas" width="10%" height="10%"> Huellitas
         </a>
 
@@ -40,14 +40,25 @@
                 </li>
                 
                 <li class="nav-item">
-                  <a class="btn btn-info m-1" href="{% url 'solicitudes-cercanas' user.cuidador.id %}">Anuncios</a>
+                  <a class="btn btn-info m-1" href="{% url 'solicitudes-cercanas' user.cuidador.id %}">Anuncios disponibles</a>
                 </li>
+
+                <li class="nav-item">
+                  <a class="btn btn-info m-1" href="{% url 'ver_solicitudes_aceptadas'  %}">Solicitudes aceptadas</a>
+                </li>
+                
+
+
               {%else%}
                 <li class="nav-item">
                   <a class="btn btn-info m-1" href="{% url 'registro_datos_cuidador' %}">Registrar datos de cuidador</a>
                 </li>
               {% endif %}
               
+              <li class="nav-item">
+                <a class=" btn btn-info m-1" href="{% url 'employee_inicio' %}">Inicio</a>
+              </li>
+
               <li class="nav-item">
                 <a class=" btn btn-danger m-1" href="{% url 'logout' %}">Cerrar sesión</a>
               </li>

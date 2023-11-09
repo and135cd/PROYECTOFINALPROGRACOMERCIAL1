@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from account.models import User
 from django.http import HttpResponseForbidden
-
+from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.core.mail import send_mail
@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from geopy.distance import geodesic
 import jwt  
 from django.contrib.auth.decorators import login_required
-from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm, GuarderiaForm, PeluqueriaForm, SolicitudDeCuidadoForm
+from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm, GuarderiaForm, PeluqueriaForm, SolicitudDeCuidadoForm, UserForm
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
 from datetime import datetime, timedelta
 from datetime import date 
@@ -176,6 +176,23 @@ def inicio(request):
 
     return render(request, 'inicio.html', {'cuidadores_cercanos': cuidadores_cercanos})
 
+def employee_inicio(request):
+    # Obtener la fecha actual
+    hoy = timezone.now().date()
+    cuidador=request.user.cuidador
+    # Encuentra las solicitudes de cuidado para el día actual
+    solicitudes_hoy = SolicitudDeCuidado.objects.filter(
+        fecha_inicio=hoy, 
+        cuidadores_aceptan=cuidador
+    ).order_by('hora_inicio')
+    
+    # Si hay solicitudes para hoy, toma la primera para el recordatorio
+    proxima_cita = solicitudes_hoy.first() if solicitudes_hoy else None
+
+    return render(request, 'cuidadores/inicio_employee.html', {
+        'proxima_cita': proxima_cita,
+    })
+
 def contactar_cuidador(request, cuidador_id):
     cuidador = get_object_or_404(Cuidador, pk=cuidador_id)
     
@@ -220,11 +237,11 @@ def login_view(request):
                     response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_customer:
-                    response = redirect('customer') 
+                    response = redirect('inicio') 
                     response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_employee:
-                    response = render(request, 'employee.html',context) 
+                    response = render(request, 'cuidadores/inicio_employee.html',context) 
                     response.set_cookie('token', token, httponly=True, secure=True) 
                     return response
             
@@ -295,27 +312,32 @@ def listar_datos_cuidador(request):
 @login_required
 def editar_datos_cuidador(request):
     try:
-        cuidador = Cuidador.objects.get(user=request.user)
+        cuidador = get_object_or_404(Cuidador, user=request.user)
+        user = request.user
 
         if request.method == 'POST':
-            form = CuidadorForm(request.POST, instance=cuidador)
-            if form.is_valid():
-                # Asignar latitud y longitud antes de guardar el modelo
-                ubicacion = request.POST.get('ubicacion', '')
-                if ubicacion:
-                    latitud, longitud = ubicacion.split(',')
-                    cuidador.latitud = float(latitud)
-                    cuidador.longitud = float(longitud)
-                cuidador = form.save(commit=False)
+            cuidador_form = CuidadorForm(request.POST, instance=cuidador)
+            user_form = UserForm(request.POST, instance=user)
+
+            if cuidador_form.is_valid() and user_form.is_valid():
+                # Guardar UserForm
+                user_form.save()
+                
+                # Procesar CuidadorForm
+                cuidador = cuidador_form.save(commit=False)
+                # ... procesar los campos de Cuidador como la latitud y longitud
                 cuidador.save()
+
                 messages.success(request, "Sus datos han sido actualizados correctamente.")
-                return redirect('listar_datos_cuidador')  
+                return redirect('listar_datos_cuidador')
         else:
-            form = CuidadorForm(instance=cuidador)
+            cuidador_form = CuidadorForm(instance=cuidador)
+            user_form = UserForm(instance=user)
 
         return render(request, 'cuidadores/editar_datos_cuidador.html', {
-            'form': form,
-            'cuidador': cuidador  # Pasamos el objeto cuidador para acceder a la latitud y longitud en el template
+            'cuidador_form': cuidador_form,
+            'user_form': user_form,
+            'cuidador': cuidador
         })
     except Cuidador.DoesNotExist:
         return redirect('registrar_datos_cuidador')
@@ -363,6 +385,20 @@ def ver_solicitud(request, solicitud_id):
     
     return render(request, 'cuidadores/solicitud_detalle.html', context)
 
+#ver solicitud aceptada
+def ver_solicitud_aceptada(request, solicitud_id):
+    # Obtener la solicitud específica y las mascotas relacionadas.
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
+    mascotas = solicitud.mascotas.all()  # Obtener todas las mascotas relacionadas con la solicitud
+
+    # Pasar la solicitud y las mascotas al contexto de la plantilla.
+    context = {
+        'solicitud': solicitud,
+        'mascotas': mascotas,
+    }
+    
+    return render(request, 'cuidadores/solicitud_detalle_aceptada.html', context)
+
 def ver_solicitud_cliente(request, solicitud_id):
     # Obtener la solicitud específica y las mascotas relacionadas.
     solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
@@ -388,6 +424,7 @@ def editar_solicitud(request, solicitud_id):
             return redirect('listar_solicitudes_de_cuidado')
     else:
         form = SolicitudDeCuidadoForm(instance=solicitud)
+        form.fields['mascotas'].queryset=Mascota.objects.filter(propietario=request.user.propietario)
     return render(request, 'clientes/editar_solicitud.html', {'form': form})
 
 
@@ -401,19 +438,19 @@ def eliminar_solicitud(request, solicitud_id):
     if request.method == 'POST':
         solicitud.delete()
         messages.success(request, 'La solicitud de cuidado ha sido eliminada.')
-        return redirect('lista_solicitudes')  # Asumiendo que tienes una vista que muestra la lista de solicitudes.
+        return redirect('listar_solicitudes_de_cuidado')  
     
     return render(request, 'clientes/eliminar_solicitud.html', {'solicitud': solicitud})
 @login_required
 def aceptar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
     
-    if request.user.is_employee:  # Suponiendo que 'is_employee' es como determinas si el usuario es un cuidador
+    if request.user.is_employee:  
         if solicitud.estado not in ['Aceptada', 'Rechazada']:  # Comprueba que la solicitud no haya sido ya aceptada o rechazada
-            solicitud.aceptar(request.user.cuidador)  # Llamas al método aceptar
+            solicitud.aceptar(request.user.cuidador)  # Llama al método aceptar
             # Aquí se envia un correo
             subject = "Tu solicitud de cuidado ha sido aceptada"
-            message = f"Hola {solicitud.propietario.user.nombre()},\n\n" \
+            message = f"Hola {solicitud.propietario.nombre},\n\n" \
                     f"Tu solicitud de cuidado para la fecha {solicitud.fecha_inicio} ha sido aceptada por {request.user.get_full_name()}.\n" \
                     "Pronto se pondrán en contacto contigo para más detalles."
             email_from = request.user.email
@@ -433,10 +470,16 @@ def aceptar_solicitud(request, solicitud_id):
 def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id)
     
-    if request.user.is_employee:  # Asumiendo que 'is_employee' indica que el usuario es un cuidador
+    if request.user.is_employee:  
         if solicitud.estado not in ['Aceptada', 'Rechazada']:  # Verifica que la solicitud no ha sido previamente aceptada o rechazada
             solicitud.rechazar(request.user.cuidador)  # Llama al método rechazar
-            # Puede ser una buena idea enviar una notificación al propietario aquí
+            # Aquí se envia un correo
+            subject = "Notificación de rechazo de solicitud de cuidado"
+            message = f"Hola {solicitud.propietario.nombre},\n\nLamentamos informarte que tu solicitud de cuidado número {solicitud_id} ha sido rechazada por el cuidador. Te invitamos a ver otros cuidadores disponibles en nuestra plataforma.\n\nSaludos,\nEquipo Huellitas"
+            email_from = request.user.email
+            recipient_list = [solicitud.propietario.user.email]
+            
+            send_mail(subject, message, email_from, recipient_list)
             messages.success(request, "Has rechazado la solicitud.")
             return redirect('detalle_solicitud', solicitud_id=solicitud_id)
         else:
@@ -444,6 +487,18 @@ def rechazar_solicitud(request, solicitud_id):
             return redirect('detalle_solicitud', solicitud_id=solicitud_id)
     else:
         return HttpResponseForbidden("No tienes permiso para realizar esta acción")
+
+@login_required
+def ver_solicitudes_aceptadas(request):
+    # Asegúrate de que el usuario es un cuidador
+    if not request.user.is_employee:
+        return HttpResponse('No tienes permiso para acceder a esta página.')
+
+    cuidador = request.user.cuidador
+    # Filtra las solicitudes de cuidado que han sido aceptadas por este cuidador
+    solicitudes_aceptadas = SolicitudDeCuidado.objects.filter(cuidadores_aceptan=cuidador, estado='Aceptada')
+    
+    return render(request, 'cuidadores/solicitudes_aceptadas.html', {'solicitudes_aceptadas': solicitudes_aceptadas})
 
 @login_required
 def registrar_datos_propietario(request):
@@ -504,44 +559,44 @@ def listar_datos_propietario(request):
 
 @login_required
 def editar_datos_propietario(request):
-    try:
-        propietario = Propietario.objects.get(user=request.user)
+    propietario = get_object_or_404(Propietario, user=request.user)
+    user_form = UserForm(instance=request.user)
+    propietario_form = PropietarioForm(instance=propietario)
 
-        if request.method == 'POST':
-            form = PropietarioForm(request.POST, instance=propietario)
-            if form.is_valid():
-                # Primero guardamos el formulario
-                propietario = form.save(commit=False)
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        propietario_form = PropietarioForm(request.POST, request.FILES, instance=propietario)
+        if user_form.is_valid() and propietario_form.is_valid():
+            user = user_form.save(commit=False)
+            propietario = propietario_form.save(commit=False)
+            
+            # Actualizamos la latitud y longitud si están presentes
+            ubicacion = request.POST.get('ubicacion', '')
+            if ubicacion:
+                latitud, longitud = ubicacion.split(',')
+                propietario.latitud = float(latitud)
+                propietario.longitud = float(longitud)
+            
+            user.save()
+            propietario.save()
+            messages.success(request, "Sus datos han sido actualizados correctamente.")
+            return redirect('listar_datos_propietario')
+    else:
+        user_form = UserForm(instance=request.user)
+        propietario_form = PropietarioForm(instance=propietario)
 
-                # Luego actualizamos la latitud y longitud si están presentes
-                ubicacion = request.POST.get('ubicacion', '')
-                if ubicacion:
-                    latitud, longitud = ubicacion.split(',')
-                    propietario.latitud = float(latitud)
-                    propietario.longitud = float(longitud)
-
-                # Finalmente, guardamos el objeto propietario
-                propietario.save()
-
-                messages.success(request, "Sus datos han sido actualizados correctamente.")
-                return redirect('listar_datos_propietario')
-        else:
-            form = PropietarioForm(instance=propietario)
-
-        context = {
-            'form': form,
-            'propietario': propietario,
-        }
-        return render(request, 'editar_datos_propietario.html', context)
-    except Propietario.DoesNotExist:
-        messages.error(request, "No se encontró el perfil del propietario.")
-        return redirect('registrar_datos_propietario')
+    context = {
+        'user_form': user_form,
+        'propietario_form': propietario_form,
+        'propietario': propietario,  
+    }
+    return render(request, 'editar_datos_propietario.html', context)
     
 
 def customer(request):
-    # Obtén el token actual del usuario autenticado
+    # Obtener el token actual del usuario autenticado
     current_token = request.COOKIES.get('token')
-    # Verifica si el usuario autenticado ya tiene un propietario asociado
+    # Verificar si el usuario autenticado ya tiene un propietario asociado
     try:
         propietario = Propietario.objects.get(user_id=request.user.id)
         propietario_nombre = f"{propietario.nombre} {propietario.apellido}"
@@ -552,7 +607,7 @@ def customer(request):
         'user': request.user,
         'propietario_nombre': propietario_nombre,
     }
-    # Renderiza la página de customer y establece el token en la cookie
+    # Renderizar la página de customer y establecer el token en la cookie
     response = render(request, 'customer.html', context)
     response.set_cookie('token', current_token, httponly=True, secure=True)
     
@@ -687,6 +742,11 @@ def publicar_paseo(request):
                 except ValueError:
                     messages.error(request, "La ubicación proporcionada es inválida.")
                     return render(request, 'cuidados/publicar_alojamiento.html', {'form': form})
+                
+          
+            if 'fecha_fin' not in request.POST or not request.POST['fecha_fin']:
+                solicitud.fecha_fin = None
+
             solicitud.calcular_precio()    
             solicitud.save()
             form.save_m2m()  

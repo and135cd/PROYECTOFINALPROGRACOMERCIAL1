@@ -1,15 +1,27 @@
 {% extends "customer.html" %}
+
 {% block content %}
-
 <div class="container">
-    <h2>Contactar a {{ cuidador.nombre }}</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Enviar</button>
-</form>
+    <h2 class="mt-4 mb-4">Contactar a {{ cuidador.nombre }}</h2>
+    <form method="post" class="row g-3 needs-validation" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3 col-12">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Enviar</button>
+            <a class="btn btn-secondary" href="{% url 'inicio' %}">Regresar</a>
+        </div>
+    </form>
 </div>
-
 
 {% endblock %}

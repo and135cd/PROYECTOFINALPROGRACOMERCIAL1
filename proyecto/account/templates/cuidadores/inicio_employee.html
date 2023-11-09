@@ -1,0 +1,65 @@
+{% extends "employee.html" %}  
+{%load static%}
+{% block content %}
+<div class="container mt-5">
+    <!-- Título y bienvenida -->
+    <div class="text-center">
+        <h1>Bienvenido, {{user.username}}</h1>
+        <p class="lead">Tu espacio para gestionar y cuidar a las mejores mascotas.</p>
+    </div>
+
+    <!-- Tarjetas de acción rápida -->
+    <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
+        <div class="col">
+            <div class="card h-100">
+                <img src="{% static 'images/cuidadores/citas.jpg' %}" class="card-img-top" alt="Gestionar Citas">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar solicitudes aceptadas</h5>
+                    <p class="card-text">Revisa y administra tus próximas solicitudes y horarios disponibles.</p>
+                    <a href="{% url 'ver_solicitudes_aceptadas'  %}" class="btn btn-primary">Ver más</a>
+                </div>
+            </div>
+        </div>
+
+        {%if user.cuidador%}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{%static 'images/mascotas/animales.jpg'%}" class="card-img-top" alt="Ver Mascotas">
+                <div class="card-body">
+                    <h5 class="card-title">Anuncios disponibles</h5>
+                    <p class="card-text">Conoce las necesidades de las mascotas que podrías cuidar y sus necesidades especiales.</p>
+                    <a href="{% url 'solicitudes-cercanas' user.cuidador.id %}" class="btn btn-primary">Ver más</a>
+                </div>
+            </div>
+        </div>
+        {%endif%}
+
+    <!-- Sección de estadísticas rápidas o recordatorios -->
+    <div class="row mt-4">
+        {% if proxima_cita %}
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white text-center p-3">
+                <blockquote class="blockquote mb-0">
+                    <p>Próxima Cita</p>
+                    <footer class="blockquote-footer text-white">
+                        <small>
+                            {{ proxima_cita.fecha_inicio }} a las {{ proxima_cita.hora_inicio }}
+                        </small>
+                    </footer>
+                </blockquote>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white text-center p-3">
+                <blockquote class="blockquote mb-0">
+                    <p>No hay citas programadas para hoy.</p>
+                </blockquote>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endblock %}

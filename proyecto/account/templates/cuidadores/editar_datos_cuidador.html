@@ -1,17 +1,40 @@
 {% extends "employee.html" %}
 
 {% block content %}
-<div class="container table-container">
+<div class="container">
     <h3 class="mt-4">Editar datos de cuidador de mascotas</h3>
-    <form method="post" id="cuidadorForm">
+    <form method="post" id="cuidadorForm" class="g-3">
         {% csrf_token %}
-        <table class="table table-bordered">
-            {{ form.as_table }}
-        </table>
-        <label>Actualice su ubicacion en el mapa</label>
-        <div id="mapid" class="my-3"></div>
-        <input type="hidden" id="ubicacion" name="ubicacion" value="{{ cuidador.latitud }},{{ cuidador.longitud }}" />
-        <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+        {% for field in user_form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        {% for field in cuidador_form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="mb-3">
+            <label for="mapid" class="form-label">Actualice su ubicación en el mapa</label>
+            <div id="mapid" class="my-3"></div>
+            <input type="hidden" id="ubicacion" name="ubicacion" value="{{ cuidador.latitud }},{{ cuidador.longitud }}" />
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
     </form>
 </div>
 

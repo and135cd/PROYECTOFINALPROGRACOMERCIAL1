@@ -1,12 +1,40 @@
 {% extends "customer.html" %}
 
 {% block content %}
-<div class="container">
-  <h3>Editar Solicitud</h3>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-  </form>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Editar Solicitud</h3>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              {{ form.non_field_errors }}
+            </div>
+            {% for field in form %}
+              <div class="mb-3">
+                {{ field.label_tag }}
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {{ field }}
+                {% if field.errors %}
+                  {% for error in field.errors %}
+                    <div class="alert alert-danger mt-2">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            {% endfor %}
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

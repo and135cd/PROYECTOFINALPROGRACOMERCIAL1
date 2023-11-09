@@ -1,0 +1,23 @@
+{% extends 'employee.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Solicitudes de cuidado aceptadas</h2>
+    <div class="list-group">
+        {% for solicitud in solicitudes_aceptadas %}
+        <a href="{% url 'detalle_solicitud_aceptada' solicitud.id %}" class="list-group-item list-group-item-action flex-column align-items-start py-3">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ solicitud.tipo_de_cuidado.nombre }}</h5>
+                <small class="text-muted">Desde {{ solicitud.fecha_inicio }} hasta {{ solicitud.fecha_fin }}</small>
+            </div>
+            <p class="mb-1">{{ solicitud.descripcion }}</p>
+            <small class="text-muted">Estado: {{ solicitud.estado }}</small>
+        </a>
+        {% empty %}
+        <div class="alert alert-info" role="alert">
+            No tienes solicitudes aceptadas.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
