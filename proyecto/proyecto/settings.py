@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account.apps.AccountConfig'
+    'account.apps.AccountConfig',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'proyecto.urls'
@@ -142,3 +145,17 @@ STATICFILES_DIR = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL='account.User'
+
+# Configurar los dominios permitidos
+CORS_ALLOWED_ALL_ORIGINS=True
+
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# Configuración para CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",  # Asegúrate de incluir el puerto correcto
+    "http://127.0.0.1:8000",
+    "http://localhost:53789",
+    "http://127.0..0.1:53789",
+]

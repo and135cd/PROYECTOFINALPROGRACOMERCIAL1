@@ -3,6 +3,10 @@ from django import forms
 from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador, User
 
 class UserForm(forms.ModelForm):
+    password1 = forms.CharField(widget=forms.PasswordInput, required=True)
+    password2 = forms.CharField(widget=forms.PasswordInput, required=True)
+    user_type = forms.ChoiceField(choices=[('customer', 'Cliente'), ('employee', 'Cuidador')], required=True)
+
     class Meta:
         model = User
         fields = ['username', 'email']

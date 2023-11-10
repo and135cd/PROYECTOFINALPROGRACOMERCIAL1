@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, api_views
 urlpatterns = [
     path('',views.index,name='index'),
     path('login/',views.login_view,name='login'),
@@ -33,9 +33,13 @@ urlpatterns = [
     path('publicar-guarderia/', views.publicar_guarderia, name='publicar_guarderia'),
     path('publicar-peluqueria/', views.publicar_peluqueria, name='publicar_peluqueria'),
     path('eliminar-solicitud/<int:solicitud_id>/', views.eliminar_solicitud, name='eliminar_solicitud'),
-
     path('solicitud/<int:solicitud_id>/aceptar/', views.aceptar_solicitud, name='aceptar_solicitud'),
     path('solicitud/<int:solicitud_id>/rechazar/', views.rechazar_solicitud, name='rechazar_solicitud'),
     path('contactar-cuidador/<int:cuidador_id>/', views.contactar_cuidador, name='contactar_cuidador'),
     path('mis-solicitudes/', views.listar_solicitudes_de_cuidado, name='listar_solicitudes_de_cuidado'),
+
+
+    #URL DE API
+    path('api/registro/', api_views.registro_api, name='api_registro'),
+
 ]
