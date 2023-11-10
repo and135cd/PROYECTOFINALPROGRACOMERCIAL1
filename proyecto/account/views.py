@@ -155,26 +155,30 @@ def registro(request):
 
 @login_required
 def inicio(request):
-    # Supongamos que tienes la latitud y longitud del propietario
-    propietario = Propietario.objects.get(user=request.user)
-    propietario_location = (propietario.latitud, propietario.longitud)
+    try:
 
-    # Obtener todos los cuidadores (en un sistema real, probablemente querrás limitar esto)
-    todos_los_cuidadores = Cuidador.objects.all()
+        # Supongamos que tienes la latitud y longitud del propietario
+        propietario = Propietario.objects.get(user=request.user)
+        propietario_location = (propietario.latitud, propietario.longitud)
 
-    # Calcula la distancia y filtra los cuidadores dentro de un radio de 10 kilómetros
-    cuidadores_cercanos = []
-    for cuidador in todos_los_cuidadores:
-        cuidador_location = (cuidador.latitud, cuidador.longitud)
-        distance = geodesic(propietario_location, cuidador_location).km
-        if distance <= 10:  # Cambia 10 por la distancia que consideres 'cercana'
-            cuidador.distance = distance
-            cuidadores_cercanos.append(cuidador)
+        # Obtener todos los cuidadores (en un sistema real, probablemente querrás limitar esto)
+        todos_los_cuidadores = Cuidador.objects.all()
 
-    # Ordena por la distancia calculada
-    cuidadores_cercanos.sort(key=lambda x: x.distance)
+        # Calcula la distancia y filtra los cuidadores dentro de un radio de 10 kilómetros
+        cuidadores_cercanos = []
+        for cuidador in todos_los_cuidadores:
+            cuidador_location = (cuidador.latitud, cuidador.longitud)
+            distance = geodesic(propietario_location, cuidador_location).km
+            if distance <= 10:  # Cambia 10 por la distancia que consideres 'cercana'
+                cuidador.distance = distance
+                cuidadores_cercanos.append(cuidador)
 
-    return render(request, 'inicio.html', {'cuidadores_cercanos': cuidadores_cercanos})
+        # Ordena por la distancia calculada
+        cuidadores_cercanos.sort(key=lambda x: x.distance)
+
+        return render(request, 'inicio.html', {'cuidadores_cercanos': cuidadores_cercanos})
+    except ObjectDoesNotExist:
+        return render(request,'inicio.html')
 
 def employee_inicio(request):
     # Obtener la fecha actual

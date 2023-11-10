@@ -41,5 +41,5 @@ urlpatterns = [
 
     #URL DE API
     path('api/registro/', api_views.registro_api, name='api_registro'),
-
+    path('api/login/', api_views.login_api, name='api_login'),
 ]
