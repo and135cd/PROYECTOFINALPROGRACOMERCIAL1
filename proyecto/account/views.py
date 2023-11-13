@@ -156,7 +156,6 @@ def registro(request):
 @login_required
 def inicio(request):
     try:
-
         # Supongamos que tienes la latitud y longitud del propietario
         propietario = Propietario.objects.get(user=request.user)
         propietario_location = (propietario.latitud, propietario.longitud)
@@ -169,7 +168,7 @@ def inicio(request):
         for cuidador in todos_los_cuidadores:
             cuidador_location = (cuidador.latitud, cuidador.longitud)
             distance = geodesic(propietario_location, cuidador_location).km
-            if distance <= 10:  # Cambia 10 por la distancia que consideres 'cercana'
+            if distance <= 3:  # Cambia 5 por la distancia que consideres 'cercana'
                 cuidador.distance = distance
                 cuidadores_cercanos.append(cuidador)
 
@@ -178,7 +177,7 @@ def inicio(request):
 
         return render(request, 'inicio.html', {'cuidadores_cercanos': cuidadores_cercanos})
     except ObjectDoesNotExist:
-        return render(request,'inicio.html')
+        return render(request, 'inicio.html')
 
 def employee_inicio(request):
     # Obtener la fecha actual

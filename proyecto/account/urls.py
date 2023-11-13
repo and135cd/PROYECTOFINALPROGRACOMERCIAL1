@@ -42,4 +42,7 @@ urlpatterns = [
     #URL DE API
     path('api/registro/', api_views.registro_api, name='api_registro'),
     path('api/login/', api_views.login_api, name='api_login'),
+    path('api/employee_inicio/', api_views.employee_inicio, name='api_employee_inicio'),
+    path('api/logout/', api_views.logout_api, name='logout_api'),
+    path('api/inicio/<str:username>/',api_views.inicio_api,name="inicio_api"),
 ]

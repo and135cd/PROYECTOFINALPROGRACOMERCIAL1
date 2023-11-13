@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ktfdaly+nl0ue0^0(3%zkid-d!ip1o+!-=a#psrqv&0fo+#z+m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 from django.contrib.messages import constants as messages
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'rest_framework',
     'corsheaders',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -148,14 +149,33 @@ AUTH_USER_MODEL='account.User'
 
 # Configurar los dominios permitidos
 CORS_ALLOWED_ALL_ORIGINS=True
+CORS_ALLOW_CREDENTIALS = True  # Si estás manejando credenciales (por ejemplo, cookies)
 
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','*']
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Configuración para CORS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",  # Asegúrate de incluir el puerto correcto
     "http://127.0.0.1:8000",
-    "http://localhost:65477",
-    "http://127.0.0.1:65477",
+    "http://localhost:53740",
+    "http://127.0.0.1:53740",
 ]
