@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ktfdaly+nl0ue0^0(3%zkid-d!ip1o+!-=a#psrqv&0fo+#z+m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*','localhost']
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
@@ -151,7 +151,6 @@ AUTH_USER_MODEL='account.User'
 CORS_ALLOWED_ALL_ORIGINS=True
 CORS_ALLOW_CREDENTIALS = True  # Si estás manejando credenciales (por ejemplo, cookies)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','*']
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -174,5 +173,8 @@ CORS_ALLOW_HEADERS = [
 
 # Configuración para CORS
 CORS_ALLOWED_ORIGINS = [
-    "*",
+    "http://localhost:8000",  # Asegúrate de incluir el puerto correcto
+    "http://127.0.0.1:8000",
+    "http://localhost:51766",
+    "http://127.0.0.1:51766",
 ]
