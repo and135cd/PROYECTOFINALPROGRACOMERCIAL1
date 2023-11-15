@@ -176,6 +176,6 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",  # Asegúrate de incluir el puerto correcto
     "http://127.0.0.1:8000",
-    "http://localhost:53740",
-    "http://127.0.0.1:53740",
+    "http://localhost:62953",
+    "http://127.0.0.1:62953",
 ]

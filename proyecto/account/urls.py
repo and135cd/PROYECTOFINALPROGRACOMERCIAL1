@@ -45,4 +45,6 @@ urlpatterns = [
     path('api/employee_inicio/', api_views.employee_inicio, name='api_employee_inicio'),
     path('api/logout/', api_views.logout_api, name='logout_api'),
     path('api/inicio/<str:username>/',api_views.inicio_api,name="inicio_api"),
+    path('api/solicitudes/<str:username>/', api_views.listar_solicitudes_de_cuidado_api, name='listar_solicitudes_api'),
+    path('api/editar-solicitud/<str:username>/<int:solicitud_id>/', api_views.editar_solicitud_por_username_api, name='editar_solicitud_por_username_api'),
 ]

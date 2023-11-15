@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from . import forms
 from django.contrib.auth import authenticate, login
@@ -20,6 +21,8 @@ from geopy.distance import geodesic
 from .models import Propietario, Cuidador, User
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.permissions import IsAuthenticated
+import json
+from .forms import SolicitudDeCuidadoForm
 
 User = get_user_model()
 
@@ -156,3 +159,64 @@ def inicio_api(request,username):
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     except Propietario.DoesNotExist:
         return JsonResponse({'error': 'No se encontró el propietario'}, status=404)
+    
+#solicitudes
+def listar_solicitudes_de_cuidado_api(request, username):
+    # Encuentra al usuario por username
+    user = get_object_or_404(User, username=username)
+
+    # Verifica si el usuario tiene un propietario asociado
+    try:
+        propietario = Propietario.objects.get(user=user)
+    except Propietario.DoesNotExist:
+        return JsonResponse({'error': 'No se encontró el propietario asociado al usuario'}, status=404)
+
+    # Obtner todas las solicitudes de cuidado asociadas a este propietario
+    solicitudes = SolicitudDeCuidado.objects.filter(propietario=propietario)
+
+    # Preparae los datos para la respuesta JSON
+    solicitudes_data = [{
+        'id': solicitud.id,
+        'fecha_inicio': solicitud.fecha_inicio,
+        'hora_inicio':solicitud.hora_inicio,
+        'fecha_fin': solicitud.fecha_fin,
+        'hora_fin':solicitud.hora_fin,
+        'ubicacion_servicio':solicitud.ubicacion_servicio,
+        'descripcion':solicitud.descripcion,
+        'estado':solicitud.estado,
+        'descripcion': solicitud.descripcion,
+        'tipo_de_cuidado':solicitud.tipo_de_cuidado.nombre,
+        'precio':solicitud.precio,
+
+        
+    } for solicitud in solicitudes]
+
+    return JsonResponse({'solicitudes': solicitudes_data})
+
+#editar solicitud
+@csrf_exempt
+@require_http_methods(["POST"])
+def editar_solicitud_por_username_api(request, username, solicitud_id):
+    # Encuentra al usuario por username
+    user = get_object_or_404(User, username=username)
+
+    # Verifica si el usuario tiene un propietario asociado
+    try:
+        propietario = Propietario.objects.get(user=user)
+    except Propietario.DoesNotExist:
+        return JsonResponse({'error': 'Propietario no encontrado'}, status=404)
+
+    # Encontrar la solicitud específica que pertenece al propietario y tiene la ID proporcionada
+    solicitud = get_object_or_404(SolicitudDeCuidado, id=solicitud_id, propietario=propietario)
+
+    # Decodificar el cuerpo de la solicitud y actualizar la solicitud
+    try:
+        data = json.loads(request.body)
+        form = SolicitudDeCuidadoForm(data, instance=solicitud)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': 'Solicitud actualizada correctamente.'})
+        else:
+            return JsonResponse({'error': form.errors}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Formato de JSON inválido'}, status=400)
