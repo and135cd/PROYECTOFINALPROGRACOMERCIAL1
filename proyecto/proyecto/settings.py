@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ktfdaly+nl0ue0^0(3%zkid-d!ip1o+!-=a#psrqv&0fo+#z+m'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*','localhost']
 from django.contrib.messages import constants as messages
@@ -175,6 +175,6 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",  # Asegúrate de incluir el puerto correcto
     "http://127.0.0.1:8000",
-    "http://localhost:51766",
-    "http://127.0.0.1:51766",
+    "http://localhost:65168",
+    "http://127.0.0.1:65168",
 ]

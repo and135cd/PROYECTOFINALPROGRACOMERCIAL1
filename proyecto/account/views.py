@@ -11,7 +11,7 @@ from geopy.distance import geodesic
 import jwt  
 from django.contrib.auth.decorators import login_required
 from .forms import PropietarioForm, MascotaForm, AlojamientoForm, CuidadorForm, PaseoForm, ContactForm, GuarderiaForm, PeluqueriaForm, SolicitudDeCuidadoForm, UserForm
-from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador
+from .models import Propietario, Mascota, SolicitudDeCuidado, TipoDeCuidado, Cuidador, GananciaPorSolicitud
 from datetime import datetime, timedelta
 from datetime import date 
 from django.contrib import messages 
@@ -32,7 +32,24 @@ def generate_jwt_token(user):
     }
     return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 
+
+
 # ...
+def vista_administrador(request):
+    try:
+        # Intenta obtener el usuario huellitas130
+        usuario_huellitas130 = User.objects.get(username='huellitas130')
+        # Filtrar las ganancias por el usuario huellitas130
+        ganancias = GananciaPorSolicitud.objects.filter(usuario=usuario_huellitas130)
+    except User.DoesNotExist:
+        # Maneja el caso en que el usuario huellitas130 no exista
+        ganancias = []
+
+    context = {
+        'user': request.user,
+        'ganancias': ganancias,
+    }
+    return render(request, 'indexAdmin.html', context)
 
 # Create your views here.
 def index(request):
@@ -81,7 +98,20 @@ def registroAdmin(request):
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password1']
+            password2=form.cleaned_data['password2']
             user_type = form.cleaned_data['user_type']
+
+             # Comprueba si las contraseñas coinciden
+            if password != password2:
+                messages.error(request, "Las contraseñas no coinciden.")
+                return render(request, 'registro.html', {'form': form})
+
+            # Comprueba si el nombre de usuario ya existe
+            if User.objects.filter(username=username).exists():
+                messages.warning(request, "Ya existe ese usuario.")
+                return render(request, 'registro.html', {'form': form})
+
+
             # Crea el usuario en la base de datos y establece que es administrador
             user = User.objects.create_user(username=username, email=email, password=password)
             if user_type == 'admin':
@@ -236,7 +266,7 @@ def login_view(request):
                 # Envía el token al cliente en la respuesta HTTP
                 
                 if user.is_admin:
-                    response = render(request, 'admin.html',context) 
+                    response = redirect('administrar')
                     response.set_cookie('token', token, httponly=True, secure=True)  
                     return response
                 elif user.is_customer:

@@ -1,0 +1,31 @@
+{% extends 'admin.html' %}
+{%load static%}
+{% block content %}
+
+<div class="container">
+    
+
+    {% if ganancias %}
+        <h3>Ganancias Generadas</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID de Solicitud</th>
+                    <th>Monto de Ganancia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ganancia in ganancias %}
+                <tr>
+                    <td>{{ ganancia.solicitud.id }}</td>
+                    <td>Q {{ ganancia.monto_ganancia }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay ganancias registradas.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

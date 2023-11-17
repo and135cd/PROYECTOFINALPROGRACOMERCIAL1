@@ -3,6 +3,7 @@ from . import views, api_views
 urlpatterns = [
     path('',views.index,name='index'),
     path('login/',views.login_view,name='login'),
+    path('administrar/', views.vista_administrador, name='administrar'),
     path('registro/',views.registro,name='registro'),
     path("registroAdmin/", views.registroAdmin, name="registroAdmin"),
     path('employee/', views.employee, name='employee'),

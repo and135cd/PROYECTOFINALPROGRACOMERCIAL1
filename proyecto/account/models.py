@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings  # Importa las configuraciones de Django
 import jwt
 from datetime import timedelta, datetime
+from decimal import Decimal
 
 # Create your models here.
 
@@ -120,12 +121,26 @@ class SolicitudDeCuidado(models.Model):
     def aceptar(self, cuidador):
         self.estado = 'Aceptada'
         self.cuidadores_aceptan.add(cuidador)
+
+        # Obtener el usuario huellitas130
+        usuario_huellitas130 = User.objects.get(username='huellitas130')
+
+        # Crear o actualizar el registro de ganancia
+        ganancia, created = GananciaPorSolicitud.objects.get_or_create(solicitud=self, usuario=usuario_huellitas130)
+        ganancia.monto_ganancia = self.precio * Decimal('0.20')
+        ganancia.save()
+
         self.save()
 
     def rechazar(self, cuidador):
         self.estado = 'Rechazada'
         self.cuidadores_aceptan.remove(cuidador)
         self.save()
+
+    def precio_neto(self):
+        factor_descuento = Decimal('0.20')
+        descuento = self.precio * factor_descuento
+        return self.precio - descuento
 
 class Conversacion(models.Model):
     solicitud_de_cuidado = models.ForeignKey(SolicitudDeCuidado, on_delete=models.CASCADE)
@@ -137,3 +152,27 @@ class Conversacion(models.Model):
 class MascotaSolicitud(models.Model):
     mascota = models.ForeignKey(Mascota, on_delete=models.CASCADE)
     solicitud_de_cuidado = models.ForeignKey(SolicitudDeCuidado, on_delete=models.CASCADE)
+
+class GananciaPorSolicitud(models.Model):
+    solicitud = models.OneToOneField(SolicitudDeCuidado, on_delete=models.CASCADE, primary_key=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ganancias', null=True, blank=True)
+    monto_ganancia = models.DecimalField(max_digits=6, decimal_places=2, default=0.0)
+
+    def save(self, *args, **kwargs):
+        if not self.usuario:
+            # Establecer el usuario por defecto (huellitas130)
+            User = models.get_user_model()
+            try:
+                usuario_default = User.objects.get(username='huellitas130')
+            except User.DoesNotExist:
+                usuario_default = None
+            self.usuario = usuario_default
+
+        if self.solicitud.estado == 'Aceptada':
+            factor_ganancia = Decimal('0.20')
+            self.monto_ganancia = self.solicitud.precio * factor_ganancia
+
+        super(GananciaPorSolicitud, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Ganancia de la solicitud {self.solicitud.id} para {self.usuario.username}"
